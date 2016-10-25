@@ -1,8 +1,16 @@
 // game of life js
 
-var width = Math.floor( 1280/6 )
-	, height = Math.floor( 800/6 )
-	, unit = 6
+var unit = 6
+
+if ( window.innerHeight > 1280 ) {
+	unit = Math.floor( 6 * window.innerHeight / 1280 );
+}
+if ( window.innerWidth > 1280 ) {
+	unit = Math.floor( 6 * window.innerWidth / 1280 );
+} 
+
+var width = Math.floor( window.innerWidth/unit )
+	, height = Math.floor( window.innerHeight/unit )
 	, total = width * height
 	, world = []
 	, world2 = []
@@ -10,9 +18,15 @@ var width = Math.floor( 1280/6 )
 	, playing
 	, canvas
 	, ctx
-	, bgColor = [0, 0, 0]
-	, liveColor = [0, 255, 0]
-	, deadColor = [255, 0, 0]
+	, bgColor = [random(0,255), random(0,255), random(0,255)]
+	, liveColor = [random(0,255), random(0,255), random(0,255)]
+	, deadColor = [random(0,255), random(0,255), random(0,255)]
+	//, bgColor = [random(0,50), random(0,50), random(0,50)]
+	//, liveColor = [random(155,255), random(155,255), random(155,255)]
+	//, deadColor = [random(50,155), random(50,155), random(50,155)]
+	//, bgColor = [0, 0, 0]
+	//, liveColor = [0, 255, 0]
+	//, deadColor = [255, 0, 0]
 	, counter = 0
 	, eggs1 = []
 	, eggs2 = []
