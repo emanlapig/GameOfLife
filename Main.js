@@ -69,6 +69,7 @@ var goL = {
 		}
 	},
 	render: function() {
+		ctx.restore();
 		ctx.clearRect( 0, 0, width * unit, height * unit );
 		for ( var i=0; i<world.length; i++ ) {
 			var col = Math.floor( i/width ) * unit;
