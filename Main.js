@@ -20,12 +20,6 @@ var width = Math.floor( window.innerWidth/unit )
 	, bgColor = [random(0,255), random(0,255), random(0,255)]
 	, liveColor = [random(0,255), random(0,255), random(0,255)]
 	, deadColor = [random(0,255), random(0,255), random(0,255)]
-	//, bgColor = [random(0,50), random(0,50), random(0,50)]
-	//, liveColor = [random(155,255), random(155,255), random(155,255)]
-	//, deadColor = [random(50,155), random(50,155), random(50,155)]
-	//, bgColor = [0, 0, 0]
-	//, liveColor = [0, 255, 0]
-	//, deadColor = [255, 0, 0]
 	, counter = 0
 	, eggs1 = []
 	, eggs2 = []
@@ -33,8 +27,10 @@ var width = Math.floor( window.innerWidth/unit )
 	, eggs4 = []
 	, eggs5 = [];
 
-// DUAL-STATE KEYS: previously, we had to store 2 copies of the world--one to read and one to act on for the next iteration. the dual-state key pattern allows us to read and act on a single array by preserving the previous state of cells we've already iterated over. this works with a standard array only if the cells have a maximum of 10 possible states, so we can use keys 0-9.
-// cases: cells can either go from alive (4) to dead (3), dead (0-3) to more dead (n-1), or dead (0-3) to alive (4)
+// DUAL-STATE KEYS: previously, we had to store 2 copies of the world--one to iterate over and one to output to.
+// The dual-state key pattern allows us to read and act on a single array by preserving the previous state of keys we've already iterated over.
+// This works on a standard array only if there are a maximum of 10 possible states, using keys 0-9.
+// Works perfectly for us since we have 5 possible states (4:alive, 1-3:ghost, 0:dead) that can each move in only 2 directions:
 // a.4->4, b.4->3, c.3->4, d.3->2, e.2->4, f.2->1, g.1->4, h.1->0, i.0->4, j.0->0
 var key_to = [ 4, 3, 4, 2, 4, 1, 4, 0, 4, 0 ];
 var key_from = [ 4, 4, 3, 3, 2, 2, 1, 1, 0, 0 ];
@@ -103,34 +99,37 @@ var goL = {
 	},
 	parse_world: function() {
 		for ( var i=0; i<world.length; i++ ) {
-			var i1 = i-1
-				, i2 = i+1
-				, i3 = i-width
-				, i4 = i-width-1
-				, i5 = i-width+1
+			// 1 2 3
+			// 4 i 5
+			// 6 7 8
+			var i1 = i-width
+				, i2 = i-width-1
+				, i3 = i-width+1
+				, i4 = i-1
+				, i5 = i+1
 				, i6 = i+width
 				, i7 = i+width-1
 				, i8 = i+width+1;
 
-			var p1 = ( world[i1] >= 0 )? ( key_from[ world[i1] ] ) : 0
-				, p2 = ( world[i2] >= 0 )? ( key_to[ world[i2] ] ) : 0
-				, p3 = ( world[i3] >= 0 )? ( key_from[ world[i3] ] ) : 0
-				, p4 = ( world[i4] >= 0 )? ( key_from[ world[i4] ] ) : 0
-				, p5 = ( world[i5] >= 0 )? ( key_from[ world[i5] ] ) : 0
-				, p6 = ( world[i6] >= 0 )? ( key_to[ world[i6] ] ) : 0
-				, p7 = ( world[i7] >= 0 )? ( key_to[ world[i7] ] ) : 0
-				, p8 = ( world[i8] >= 0 )? ( key_to[ world[i8] ] ) : 0;
+			var indices = [ i1, i2, i3, i4, i5, i6, i7, i8 ];
+			var cells = [ 0, 0, 0, 0, 0, 0, 0, 0 ];
+			var sum = 0;
 
-			if ( p1>3 ) { p1 = 1; } else { p1 = 0; };
-			if ( p2>3 ) { p2 = 1; } else { p2 = 0; };
-			if ( p3>3 ) { p3 = 1; } else { p3 = 0; };
-			if ( p4>3 ) { p4 = 1; } else { p4 = 0; };
-			if ( p5>3 ) { p5 = 1; } else { p5 = 0; };
-			if ( p6>3 ) { p6 = 1; } else { p6 = 0; };
-			if ( p7>3 ) { p7 = 1; } else { p7 = 0; };
-			if ( p8>3 ) { p8 = 1; } else { p8 = 0; };
-
-			var sum = p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8;
+			for ( var j=0; j<indices.length; j++ ) {
+				if ( indices[j] >= 0 && indices[j] <= world.length ) {
+					var look = indices[j];
+				} else if ( indices[j] < 0 ) {
+					var look = indices[j] + world.length;
+				} else if ( indices[j] > world.length ) {
+					var look = indices[j] - world.length;
+				}
+				if ( j < 4 ) {
+					cells[j] = ( key_from[ world[look] ] > 3 )? 1 : 0;
+				} else {
+					cells[j] = ( key_to[ world[look] ] > 3 )? 1 : 0;
+				}
+				sum += cells[j];
+			}
 
 			var to = key_to[ world[i] ];
 			var from = key_to[ world[i] ];
