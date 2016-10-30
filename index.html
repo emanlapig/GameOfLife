@@ -4,18 +4,27 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 	<title>Game of Life</title>
 	<script type="text/javascript" src="Main.min.js"></script>
-	<style type="text/css">
-		body {
-			margin: 0px;
-			background-color: #000;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
 	<canvas id="stage">
 	</canvas>
 
 	<div id="controls">
+		options<br>
+		<span id="menu" class="hidden">
+			<a class="btn" id="save-fav" href="javascript:;">save fav</a><br>
+			<a class="btn" id="next-fav" href="javascript:;">next fav</a><br>
+			<a class="btn" id="randomize" href="javascript:;">randomize</a><br>
+			<a class="btn" id="cycle-favs" href="javascript:;">&#10003;cycle favs</a><br>
+			<a class="btn" id="cycle-random" href="javascript:;">cycle random</a><br>
+			<a class="btn" id="cycle-speed" href="javascript:;">cycle speed 10s</a>
+		</span>
+	</div>
+
+	<div id="color-confirm" class="confirm hidden">
+		save color scheme?<br><br>
+		<a class="btn" id="yes">yes</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn" id="no">no</a>
 	</div>
 
 	<script type="text/javascript">

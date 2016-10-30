@@ -1,0 +1,68 @@
+body {
+	margin: 0px;
+	background-color: #000;
+}
+#controls, .confirm {
+	position: absolute;
+	display: block;
+	padding: 8px;
+	background-color: #000;
+	color: #fff;
+	font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+	font-size: 12px;
+	line-height: 20px;
+	cursor: pointer;
+}
+#controls {
+	right: 10px;
+	top: 10px;
+	text-align: right;
+}
+.open {
+	width: 90px;
+}
+a.btn:link {
+	text-decoration: none;
+	color: #fff;
+}
+a.btn:hover {
+	color: #000;
+	background-color: #fff;
+}
+.hidden {
+	display: none;
+}
+.confirm {
+	width: 20%;
+	height: 10%;
+	margin-top: -5%;
+	margin-left: -10%;
+	text-align: center;
+	padding-top: 1.5%;
+	padding-bottom: 2%;
+	top: 50%;
+	left: 50%;
+}
+.strike {
+	text-decoration: line-through !important;
+}
+@media (orientation:portrait) {
+	#controls {
+		top: 50px;
+	}
+	#controls, .confirm {
+		padding: 20px;
+		font-size: 36px;
+		line-height: 56px;
+	}
+	.confirm {
+		width: 40%;
+		height: 16%;
+		padding-top: 5%;
+		margin-top: -16%;
+		margin-left: -20%;
+	}
+	.open {
+		width: 300px;
+	}
+}
