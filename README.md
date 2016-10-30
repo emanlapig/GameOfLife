@@ -5,5 +5,6 @@ This is a JavaScript/canvas emulation of <a href="https://en.wikipedia.org/wiki/
 #### Objectives
 + ~~Create an in-browser GoL emulation that can run indefinitely without crashing (desktop and mobile)~~
 + ~~Generate random colors~~
-+ Store favorite color schemes
++ ~~Store favorite color schemes~~
++ Add menu for managing color schemes
 + Eliminate memory leaks
