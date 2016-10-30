@@ -1,19 +1,19 @@
 // game of life js
 
-var unit = 6
+var unit = 8
 
 if ( window.innerHeight > 1280 ) {
-	unit = Math.floor( 6 * window.innerHeight / 1280 );
+	unit = Math.floor( 8 * window.innerHeight / 1280 );
 }
 if ( window.innerWidth > 1280 ) {
-	unit = Math.floor( 6 * window.innerWidth / 1280 );
+	unit = Math.floor( 8 * window.innerWidth / 1280 );
 } 
 
 var width = Math.floor( window.innerWidth/unit )
 	, height = Math.floor( window.innerHeight/unit )
 	, total = width * height
 	, world = []
-	, fps = 9
+	, fps = 12
 	, playing
 	, canvas
 	, ctx
