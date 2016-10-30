@@ -2,6 +2,7 @@
 
 var unit = 8
 
+// cap at 1280 max width or height
 if ( window.innerHeight > 1280 ) {
 	unit = Math.floor( 8 * window.innerHeight / 1280 );
 }
@@ -27,25 +28,27 @@ var width = Math.floor( window.innerWidth/unit )
 	, eggs4 = []
 	, eggs5 = [];
 
-// DUAL-STATE KEYS: previously, we had to store 2 copies of the world--one to iterate over and one to output to.
-// The dual-state key pattern allows us to read and act on a single array by preserving the previous state of keys we've already iterated over.
-// This works on a standard array only if there are a maximum of 10 possible states, using keys 0-9.
-// Works perfectly for us since we have 5 possible states (4:alive, 1-3:ghost, 0:dead) that can each move in only 2 directions:
-// a.4->4, b.4->3, c.3->4, d.3->2, e.2->4, f.2->1, g.1->4, h.1->0, i.0->4, j.0->0
-var key_to = [ 4, 3, 4, 2, 4, 1, 4, 0, 4, 0 ];
-var key_from = [ 4, 4, 3, 3, 2, 2, 1, 1, 0, 0 ];
-
+// ghost color gradient
 var deadColor2 = [
 	Math.floor( Number( deadColor[0] + (bgColor[0] - deadColor[0])*(1/3) ) ),
 	Math.floor( Number( deadColor[1] + (bgColor[1] - deadColor[1])*(1/3) ) ),
 	Math.floor( Number( deadColor[2] + (bgColor[2] - deadColor[2])*(1/3) ) ),
 ];
-
 var deadColor3 = [
 	Math.floor( Number( deadColor[0] + (bgColor[0] - deadColor[0])*(2/3) ) ),
 	Math.floor( Number( deadColor[1] + (bgColor[1] - deadColor[1])*(2/3) ) ),
 	Math.floor( Number( deadColor[2] + (bgColor[2] - deadColor[2])*(2/3) ) ),
 ];
+
+
+// DUAL-STATE KEYS: Previously, we had to store 2 copies of the world--one to iterate over and one to output to.
+// The dual-state key pattern allows us to read and act on a single array by preserving the previous state of keys we've already iterated over.
+// This works with standard arrays only if there are a maximum of 10 possible dual-states, using 0-9 as our final keys.
+// Works perfectly for us since we have 5 possible states (4:alive, 1-3:ghost, 0:dead) that can each move in only 2 directions:
+// a.4->4, b.4->3, c.3->4, d.3->2, e.2->4, f.2->1, g.1->4, h.1->0, i.0->4, j.0->0
+var keyTo = [ 4, 3, 4, 2, 4, 1, 4, 0, 4, 0 ];
+var keyFrom = [ 4, 4, 3, 3, 2, 2, 1, 1, 0, 0 ];
+
 
 var goL = {
 	init: function() {
@@ -53,6 +56,7 @@ var goL = {
 		ctx = canvas.getContext( '2d' );
 		canvas.width = width * unit;
 		canvas.height = height * unit;
+		// generate random world seed
 		for ( var i=0; i<total; i++ ) {
 			var rand = ( Math.floor( Math.random() * 2 ) == 0 );
 			if (rand) {
@@ -61,19 +65,19 @@ var goL = {
 				world.push(0);
 			}
 			if ( i === total-1 ) {
-				console.log("ready");
+				console.log("world ready");
 				goL.render();
 				goL.start();
 			}
 		}
 	},
 	render: function() {
-		ctx.restore();
+		ctx.restore(); // reset the canvas each frame
 		ctx.clearRect( 0, 0, width * unit, height * unit );
 		for ( var i=0; i<world.length; i++ ) {
 			var col = Math.floor( i/width ) * unit;
 			var row = Math.floor( i%width ) * unit;
-			var to = key_to[ world[i] ];
+			var to = keyTo[ world[i] ];
 			switch ( to ) {
 				case 0:
 					ctx.fillStyle = "rgb("+bgColor[0]+","+bgColor[1]+","+bgColor[2]+")";
@@ -99,23 +103,25 @@ var goL = {
 	},
 	parse_world: function() {
 		for ( var i=0; i<world.length; i++ ) {
+			// find this cell's neighbors
 			// 1 2 3
 			// 4 i 5
 			// 6 7 8
-			var i1 = i-width
-				, i2 = i-width-1
+			var i1 = i-width-1
+				, i2 = i-width
 				, i3 = i-width+1
 				, i4 = i-1
 				, i5 = i+1
-				, i6 = i+width
-				, i7 = i+width-1
+				, i6 = i+width-1
+				, i7 = i+width
 				, i8 = i+width+1;
 
-			var indices = [ i1, i2, i3, i4, i5, i6, i7, i8 ];
-			var cells = [ 0, 0, 0, 0, 0, 0, 0, 0 ];
-			var sum = 0;
+			var indices = [ i1, i2, i3, i4, i5, i6, i7, i8 ]
+				, cells = [ 0, 0, 0, 0, 0, 0, 0, 0 ]
+				, sum = 0; // total # of neighbors
 
 			for ( var j=0; j<indices.length; j++ ) {
+				// world vertical wrap
 				if ( indices[j] >= 0 && indices[j] <= world.length ) {
 					var look = indices[j];
 				} else if ( indices[j] < 0 ) {
@@ -123,16 +129,18 @@ var goL = {
 				} else if ( indices[j] > world.length ) {
 					var look = indices[j] - world.length;
 				}
-				if ( j < 4 ) {
-					cells[j] = ( key_from[ world[look] ] > 3 )? 1 : 0;
-				} else {
-					cells[j] = ( key_to[ world[look] ] > 3 )? 1 : 0;
+				// evaluate dual-state key of this neighbor (0 or 1, no ghosts)
+				if ( j < 4 ) { // already iterated over these
+					cells[j] = ( keyFrom[ world[look] ] > 3 )? 1 : 0; 
+				} else { // haven't iterated over yet
+					cells[j] = ( keyTo[ world[look] ] > 3 )? 1 : 0; 
 				}
+				// add up neighbors
 				sum += cells[j];
 			}
 
-			var to = key_to[ world[i] ];
-			var from = key_to[ world[i] ];
+			var to = keyTo[ world[i] ];
+			var from = keyTo[ world[i] ];
 
 			// CONWAY'S RULES
 			if ( from < 4 ) { // DEAD
@@ -188,16 +196,17 @@ var goL = {
 					break;
 			}
 		}
-
+		// check for eggs once every 100 frames
 		if ( counter < 100 ) {
 			counter += 1;
 		} else {
 			goL.hatch();
+			counter = 0;
 		}
 		goL.render();
 	},
 	hatch: function() {
-		var re = new RegExp( "00.{"+(width-2)+"}00", "g" ),
+		var re = new RegExp( "00.{"+(width-2)+"}00", "g" ), // "egg" search
 		    str = world.join(""),
 		    matches = [];
 		while ((match = re.exec(str)) != null) {
@@ -217,23 +226,22 @@ var goL = {
 				, match3 = ( eggs3.indexOf( eggs1[j] ) > -1 )? 1 : 0
 				, match4 = ( eggs4.indexOf( eggs1[j] ) > -1 )? 1 : 0
 				, match5 = ( eggs5.indexOf( eggs1[j] ) > -1 )? 1 : 0
-				, mature =  match2 + match3 + match4 + match5;
-			if ( mature === 4 ) {
+				, mature =  match2 + match3 + match4 + match5; 
+			if ( mature === 4 ) { // egg must survive 5 checks
 				hatch.push( eggs1[j] );
 			}
 		}
 
-		var rand = random( 0, hatch.length ),
+		var rand = random( 0, hatch.length ), // choose one egg at random, if we have any
 			rRow = Math.floor( hatch[rand] / width ),
 			rCol = Math.floor( hatch[rand] % width );
 		for ( var j=0; j<world.length; j++ ) {
 			var row = Math.floor( j/width )
 				, col = Math.floor( j%width );
-			if ( row === rRow  || col === rCol ) {
+			if ( row === rRow  || col === rCol ) { // generate a horizontal and vertical line
 				world[j] = 0;
 			}
 		}
-		counter = 0;
 	},
 	start: function() {
 		if ( !fps ) {
@@ -251,3 +259,5 @@ function random( a, b ) {
 	var c = b - a;
 	return Math.floor( Math.random()*c+a );
 }
+
+// the end.
