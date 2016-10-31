@@ -24,11 +24,11 @@ var width = Math.floor( window.innerWidth/unit )
 	, eggs3 = []
 	, eggs4 = []
 	, eggs5 = []
-	, bgColor
-	, liveColor
-	, deadColor
-	, deadColor2
-	, deadColor3
+	, bg
+	, live
+	, dead
+	, dead2
+	, dead3
 	, cycle_favs = true
 	, cycle_random = false
 	, favIndex = 0
@@ -46,11 +46,11 @@ if ( favorites === null ) { // if we don't have favorites, set and use the defau
 } else {
 	favorites = JSON.parse( window.localStorage.getItem("GoL_colors") );
 	shuffle( favorites.array ); // choose a random fav to start with
-	bgColor = favorites.array[0].bgColor;
-	liveColor = favorites.array[0].liveColor;
-	deadColor = favorites.array[0].deadColor;
-	deadColor2 = favorites.array[0].deadColor2;
-	deadColor3 = favorites.array[0].deadColor3;
+	bg = favorites.array[0].b;
+	live = favorites.array[0].l;
+	dead = favorites.array[0].d;
+	dead2 = favorites.array[0].d2;
+	dead3 = favorites.array[0].d3;
 };
 
 
@@ -109,11 +109,11 @@ function init() {
 	var saveYesBtn = document.getElementById( "color-yes" );
 	saveYesBtn.addEventListener( "click", function( event ) {
 		var colors = {
-			bgColor: bgColor,
-			liveColor: liveColor,
-			deadColor: deadColor,
-			deadColor2: deadColor2,
-			deadColor3: deadColor3
+			b: bg,
+			l: live,
+			d: dead,
+			d2: dead2,
+			d3: dead3
 		}
 		favorites.array.push( colors );
 		window.localStorage.setItem( "GoL_colors", JSON.stringify( favorites ) );
@@ -219,19 +219,19 @@ var goL = {
 			var to = keyTo[ world[i] ];
 			switch ( to ) {
 				case 0:
-					ctx.fillStyle = "rgb("+bgColor[0]+","+bgColor[1]+","+bgColor[2]+")";
+					ctx.fillStyle = "rgb("+bg[0]+","+bg[1]+","+bg[2]+")";
 					break;
 				case 1:
-					ctx.fillStyle = "rgb("+deadColor3[0]+","+deadColor3[1]+","+deadColor3[2]+")";
+					ctx.fillStyle = "rgb("+dead3[0]+","+dead3[1]+","+dead3[2]+")";
 					break;
 				case 2:
-					ctx.fillStyle = "rgb("+deadColor2[0]+","+deadColor2[1]+","+deadColor2[2]+")";
+					ctx.fillStyle = "rgb("+dead2[0]+","+dead2[1]+","+dead2[2]+")";
 					break;
 				case 3:
-					ctx.fillStyle = "rgb("+deadColor[0]+","+deadColor[1]+","+deadColor[2]+")";
+					ctx.fillStyle = "rgb("+dead[0]+","+dead[1]+","+dead[2]+")";
 					break;
 				case 4:
-					ctx.fillStyle = "rgb("+liveColor[0]+","+liveColor[1]+","+liveColor[2]+")";
+					ctx.fillStyle = "rgb("+live[0]+","+live[1]+","+live[2]+")";
 					break;
 			}
 			ctx.fillRect( row, col, unit, unit );
@@ -410,18 +410,18 @@ function cycle_colors() {
 };
 
 function random_color() {
-	bgColor = [ Math.floor( random(0,255) ), Math.floor( random(0,255) ), Math.floor( random(0,255) ) ];
-	liveColor = [ Math.floor( random(0,255) ), Math.floor( random(0,255) ), Math.floor( random(0,255) ) ];
-	deadColor = [ Math.floor( random(0,255) ), Math.floor( random(0,255) ), Math.floor( random(0,255) ) ];
-	deadColor2 = [
-		Math.floor( Number( deadColor[0] + (bgColor[0] - deadColor[0])*(1/3) ) ),
-		Math.floor( Number( deadColor[1] + (bgColor[1] - deadColor[1])*(1/3) ) ),
-		Math.floor( Number( deadColor[2] + (bgColor[2] - deadColor[2])*(1/3) ) ),
+	bg = [ Math.floor( random(0,255) ), Math.floor( random(0,255) ), Math.floor( random(0,255) ) ];
+	live = [ Math.floor( random(0,255) ), Math.floor( random(0,255) ), Math.floor( random(0,255) ) ];
+	dead = [ Math.floor( random(0,255) ), Math.floor( random(0,255) ), Math.floor( random(0,255) ) ];
+	dead2 = [
+		Math.floor( Number( dead[0] + (bg[0] - dead[0])*(1/3) ) ),
+		Math.floor( Number( dead[1] + (bg[1] - dead[1])*(1/3) ) ),
+		Math.floor( Number( dead[2] + (bg[2] - dead[2])*(1/3) ) ),
 	];
-	deadColor3 = [
-		Math.floor( Number( deadColor[0] + (bgColor[0] - deadColor[0])*(2/3) ) ),
-		Math.floor( Number( deadColor[1] + (bgColor[1] - deadColor[1])*(2/3) ) ),
-		Math.floor( Number( deadColor[2] + (bgColor[2] - deadColor[2])*(2/3) ) ),
+	dead3 = [
+		Math.floor( Number( dead[0] + (bg[0] - dead[0])*(2/3) ) ),
+		Math.floor( Number( dead[1] + (bg[1] - dead[1])*(2/3) ) ),
+		Math.floor( Number( dead[2] + (bg[2] - dead[2])*(2/3) ) ),
 	];
 	reset_cycle();
 };
@@ -432,11 +432,11 @@ function next_fav() {
 	} else {
 		favIndex = 0;
 	}
-	bgColor = favorites.array[ favIndex ].bgColor;
-	liveColor = favorites.array[ favIndex ].liveColor;
-	deadColor = favorites.array[ favIndex ].deadColor;
-	deadColor2 = favorites.array[ favIndex ].deadColor2;
-	deadColor3 = favorites.array[ favIndex ].deadColor3;
+	bg = favorites.array[ favIndex ].b;
+	live = favorites.array[ favIndex ].l;
+	dead = favorites.array[ favIndex ].d;
+	dead2 = favorites.array[ favIndex ].d2;
+	dead3 = favorites.array[ favIndex ].d3;
 	reset_cycle();
 };
 
@@ -463,26 +463,26 @@ function reset_cycle() {
 };
 
 function set_default() {
-	bgColor = [255, 255, 255]
-	liveColor = [0, 0, 0]
-	deadColor = [255, 0, 0]
-	deadColor2 = [
-		Math.floor( Number( deadColor[0] + (bgColor[0] - deadColor[0])*(1/3) ) ),
-		Math.floor( Number( deadColor[1] + (bgColor[1] - deadColor[1])*(1/3) ) ),
-		Math.floor( Number( deadColor[2] + (bgColor[2] - deadColor[2])*(1/3) ) ),
+	bg = [255, 255, 255]
+	live = [0, 0, 0]
+	dead = [255, 0, 0]
+	dead2 = [
+		Math.floor( Number( dead[0] + (bg[0] - dead[0])*(1/3) ) ),
+		Math.floor( Number( dead[1] + (bg[1] - dead[1])*(1/3) ) ),
+		Math.floor( Number( dead[2] + (bg[2] - dead[2])*(1/3) ) ),
 	];
-	deadColor3 = [
-		Math.floor( Number( deadColor[0] + (bgColor[0] - deadColor[0])*(2/3) ) ),
-		Math.floor( Number( deadColor[1] + (bgColor[1] - deadColor[1])*(2/3) ) ),
-		Math.floor( Number( deadColor[2] + (bgColor[2] - deadColor[2])*(2/3) ) ),
+	dead3 = [
+		Math.floor( Number( dead[0] + (bg[0] - dead[0])*(2/3) ) ),
+		Math.floor( Number( dead[1] + (bg[1] - dead[1])*(2/3) ) ),
+		Math.floor( Number( dead[2] + (bg[2] - dead[2])*(2/3) ) ),
 	];
 	favorites = { array: [
 		{
-			bgColor: bgColor,
-			liveColor: liveColor,
-			deadColor: deadColor,
-			deadColor2: deadColor2,
-			deadColor3: deadColor3
+			b: bg,
+			l: live,
+			d: dead,
+			d2: dead2,
+			d3: dead3
 		}
 	]};
 	var defaultFavs = JSON.stringify( favorites );
