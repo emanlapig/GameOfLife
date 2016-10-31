@@ -125,6 +125,7 @@ function init() {
 		var confirm = document.getElementById( "color-confirm" );
 		confirm.setAttribute( "class", "confirm hidden" );
 	}, false );
+	saveFavBtn.innerHTML = "save fav (" + favorites.array.length + ")";
 
 	var nextFavBtn = document.getElementById( "next-fav" );
 	nextFavBtn.addEventListener( "click", next_fav , false );
