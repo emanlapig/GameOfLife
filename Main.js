@@ -91,7 +91,18 @@ function init() {
 	}, false );
 
 	var randomizeBtn = document.getElementById( "randomize" );
-	randomizeBtn.addEventListener( "click", random_color, false );
+	randomizeBtn.addEventListener( "click", function( event ) {
+		random_color();
+		if ( cycle_favs ) {
+			cycle_favs = false;
+			cycle_random = true;
+			var cycleFavsBtn = document.getElementById( "cycle-favs" );
+			var cycleRandomBtn = document.getElementById( "cycle-random" );
+			cycleFavsBtn.innerHTML = "cycle favs";
+			cycleRandomBtn.innerHTML = "&#10003; cycle random";
+			reset_cycle();
+		}
+	}, false );
 
 	var openOptionsBtn = document.getElementById( "controls" );
 	openOptionsBtn.addEventListener( "click", function( event ) {
@@ -106,6 +117,7 @@ function init() {
 		var confirm = document.getElementById( "color-confirm" );
 		confirm.setAttribute( "class", "confirm" );
 	}, false );
+
 	var saveYesBtn = document.getElementById( "color-yes" );
 	saveYesBtn.addEventListener( "click", function( event ) {
 		var colors = {
@@ -116,10 +128,11 @@ function init() {
 			d3: dead3
 		}
 		favorites.array.push( colors );
-		window.localStorage.setItem( "GoL_colors", JSON.stringify( favorites ) );
+		save_ls();
 		var confirm = document.getElementById( "color-confirm" );
 		confirm.setAttribute( "class", "confirm hidden" );
 	}, false );
+
 	var saveNoBtn = document.getElementById( "color-no" );
 	saveNoBtn.addEventListener( "click", function( event ) {
 		var confirm = document.getElementById( "color-confirm" );
@@ -128,13 +141,25 @@ function init() {
 	saveFavBtn.innerHTML = "save fav (" + favorites.array.length + ")";
 
 	var nextFavBtn = document.getElementById( "next-fav" );
-	nextFavBtn.addEventListener( "click", next_fav , false );
+	nextFavBtn.addEventListener( "click", function( event ) {
+		next_fav();
+		if ( cycle_random ) {
+			cycle_favs = true;
+			cycle_random = false;
+			var cycleFavsBtn = document.getElementById( "cycle-favs" );
+			var cycleRandomBtn = document.getElementById( "cycle-random" );
+			cycleFavsBtn.innerHTML = "&#10003; cycle favs";
+			cycleRandomBtn.innerHTML = "cycle random";
+			reset_cycle();
+		}
+	}, false );
 
 	var deleteFavBtn = document.getElementById( "delete-fav" );
 	deleteFavBtn.addEventListener( "click", function( event ) {
 		var confirm = document.getElementById( "delete-confirm" );
 		confirm.setAttribute( "class", "confirm" );
 	}, false );
+
 	var deleteYesBtn = document.getElementById( "delete-yes" );
 	deleteYesBtn.addEventListener( "click", function( event ) {
 		favorites.array.splice( favIndex, 1 );
@@ -142,12 +167,12 @@ function init() {
 			favIndex = 0;
 			set_default();
 		}
-		var favStr = JSON.stringify( favorites );
-		window.localStorage.setItem( "GoL_colors", favStr );
+		save_ls();
 		next_fav();
 		var confirm = document.getElementById( "delete-confirm" );
 		confirm.setAttribute( "class", "confirm hidden" );
 	}, false);
+
 	var deleteNoBtn = document.getElementById( "delete-no" );
 	deleteNoBtn.addEventListener( "click", function( event ) {
 		var confirm = document.getElementById( "delete-confirm" );
@@ -486,8 +511,14 @@ function set_default() {
 			d3: dead3
 		}
 	]};
-	var defaultFavs = JSON.stringify( favorites );
-	window.localStorage.setItem( "GoL_colors", defaultFavs );
+	save_ls();
+}
+
+function save_ls() {
+	var favstr = JSON.stringify( favorites );
+	window.localStorage.setItem( "GoL_colors", favstr );
+	var saveFavBtn = document.getElementById( "save-fav" );
+	saveFavBtn.innerHTML = "save fav (" + favorites.array.length + ")";
 }
 
 // the end.
