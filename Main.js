@@ -415,14 +415,16 @@ function hatch() {
 		}
 	}
 
-	var rand = random( 0, hatch.length ), // choose one egg at random, if we have any
-		hRow = Math.floor( hatch[rand] / width ),
-		hCol = Math.floor( hatch[rand] % width );
-	for ( var j=0; j<world.length; j++ ) {
-		var row = Math.floor( j/width )
-			, col = Math.floor( j%width );
-		if ( row === hRow  || col === hCol ) { // generate a horizontal and vertical line of live cells
-			world[j] = 0;
+	if ( hatch.length > 0 ) {
+		var mid = Math.floor( hatch.length / 2 );
+			hRow = Math.floor( hatch[ mid ] / width ),
+			hCol = Math.floor( hatch[ mid ] % width );
+		for ( var j=0; j<world.length; j++ ) {
+			var row = Math.floor( j/width )
+				, col = Math.floor( j%width );
+			if ( row === hRow  || col === hCol ) { // generate a horizontal and vertical line of live cells
+				world[j] = 0;
+			}
 		}
 	}
 };
