@@ -37,6 +37,8 @@ var width = Math.floor( window.innerWidth/unit )
 	, cIntLabels = [ "5s", "10s", "20s", "30s", "60s" ]
 	, cIntIndex = 1
 	, colorCycle = setInterval( cycle_colors, cIntervals[ cIntIndex ] )
+	, cycleCounterInt = setInterval( update_cycle_counter, 1000 )
+	, cycleCounter = 0
 	, pause = false;
 
 // load favorite colors from localStorage
@@ -488,6 +490,7 @@ function reset_cycle() {
 	colorCycle = setInterval( cycle_colors, cIntervals[ cIntIndex ] );
 	var cycleSpeedBtn = document.getElementById( "cycle-speed" );
 	cycleSpeedBtn.innerHTML = "cycle speed " + cIntLabels[ cIntIndex ];
+	reset_cycle_counter();
 };
 
 function set_default() {
@@ -521,6 +524,26 @@ function save_ls() {
 	window.localStorage.setItem( "GoL_colors", favstr );
 	var saveFavBtn = document.getElementById( "save-fav" );
 	saveFavBtn.innerHTML = "save fav (" + favorites.array.length + ")";
+}
+
+function update_cycle_counter() {
+	if ( cycleCounter !== cIntervals[ cIntIndex ] ) {
+		cycleCounter += 1000;
+	} else {
+		cycleCounter = 0;
+	}
+	var countdownBtn = document.getElementById( "countdown" );
+	var time = ( cIntervals[ cIntIndex ] - cycleCounter ) / 1000;
+	countdownBtn.innerHTML = "next: " + time + "s";
+}
+
+function reset_cycle_counter() {
+	cycleCounter = 0;
+	var countdownBtn = document.getElementById( "countdown" );
+	var time = ( cIntervals[ cIntIndex ] - cycleCounter ) / 1000;
+	countdownBtn.innerHTML = "next: " + time + "s";
+	clearInterval( cycleCounterInt );
+	cycleCounterInt = setInterval( update_cycle_counter, 1000 );
 }
 
 // the end.
