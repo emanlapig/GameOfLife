@@ -1,4 +1,4 @@
-// game of life js
+// GAME of LIFE JS
 
 var unit = 8
 
@@ -29,31 +29,10 @@ var width = Math.floor( window.innerWidth/unit )
 	, dead
 	, dead2
 	, dead3
-	, cycle_favs = true
-	, cycle_random = false
-	, favIndex = 0
-	, cInterval = 10000
-	, cIntervals = [ 5000, 10000, 20000, 30000, 60000 ]
-	, cIntLabels = [ "5s", "10s", "20s", "30s", "60s" ]
-	, cIntIndex = 1
-	, colorCycle = setInterval( cycle_colors, cIntervals[ cIntIndex ] )
-	, cycleCounterInt = setInterval( update_cycle_counter, 1000 )
-	, cycleCounter = 0
-	, pause = false;
+	, pause = false
+	, btns = {};
 
-// load favorite colors from localStorage
-var favorites = window.localStorage.getItem("GoL_colors");
-if ( favorites === null ) { // if we don't have favorites, set and use the default scheme
-	set_default();
-} else {
-	favorites = JSON.parse( window.localStorage.getItem("GoL_colors") );
-	shuffle( favorites.array ); // choose a random fav to start with
-	bg = favorites.array[0].b;
-	live = favorites.array[0].l;
-	dead = favorites.array[0].d;
-	dead2 = favorites.array[0].d2;
-	dead3 = favorites.array[0].d3;
-};
+var favorites = window.localStorage.getItem("GoL_colors"); // load favorite colors from localStorage
 
 
 // DUAL-STATE KEYS: Previously, we had to store 2 copies of the world--one to iterate over and one to output to.
@@ -66,10 +45,24 @@ var keyFrom = [ 4, 4, 3, 3, 2, 2, 1, 1, 0, 0 ];
 
 
 function init() {
+	// favorite colors
+	if ( favorites === null ) { // if we don't have favorites, set and use the default scheme
+		Colors.set_default();
+	} else {
+		favorites = JSON.parse( window.localStorage.getItem("GoL_colors") );
+		shuffle( favorites.array ); // randomize our favorites list
+		bg = favorites.array[0].b;
+		live = favorites.array[0].l;
+		dead = favorites.array[0].d;
+		dead2 = favorites.array[0].d2;
+		dead3 = favorites.array[0].d3;
+	};
+
 	canvas = document.getElementById( "stage" );
 	ctx = canvas.getContext( '2d' );
 	canvas.width = width * unit;
 	canvas.height = height * unit;
+
 	// generate random world seed
 	for ( var i=0; i<total; i++ ) {
 		var rand = ( Math.floor( Math.random() * 2 ) == 0 );
@@ -80,11 +73,27 @@ function init() {
 		}
 		if ( i === total-1 ) {
 			console.log("world ready");
-			goL.render();
-			goL.start();
+			GoL.render();
+			GoL.start();
 		}
 	}
-	// button event listeners
+
+	btns.randomize = document.getElementById( "randomize" );
+	btns.options = document.getElementById( "controls" );
+	btns.save = document.getElementById( "save-fav" );
+	btns.saveYes = document.getElementById( "color-yes" );
+	btns.saveNo = document.getElementById( "color-no" );
+	btns.next = document.getElementById( "next-fav" );
+	btns.delete = document.getElementById( "delete-fav" );
+	btns.delYes = document.getElementById( "delete-yes" );
+	btns.delNo = document.getElementById( "delete-no" );
+	btns.cycleFavs = document.getElementById( "cycle-favs" );
+	btns.cycleRand = document.getElementById( "cycle-random" );
+	btns.cycleSpeed = document.getElementById( "cycle-speed" );
+	btns.pause = document.getElementById( "pause" );
+	btns.countdown = document.getElementById( "countdown" );
+
+	// BUTTON EVENT LISTENERS
 	canvas.addEventListener( "click", function( event ) {
 		var menu = document.getElementById( "menu" );
 		menu.setAttribute( "class", "hidden" );
@@ -92,36 +101,33 @@ function init() {
 		controls.setAttribute( "class", "" );
 	}, false );
 
-	var randomizeBtn = document.getElementById( "randomize" );
-	randomizeBtn.addEventListener( "click", function( event ) {
-		random_color();
-		if ( cycle_favs ) {
-			cycle_favs = false;
-			cycle_random = true;
-			var cycleFavsBtn = document.getElementById( "cycle-favs" );
-			var cycleRandomBtn = document.getElementById( "cycle-random" );
-			cycleFavsBtn.innerHTML = "cycle favs";
-			cycleRandomBtn.innerHTML = "&#10003; cycle random";
-			reset_cycle();
-		}
-	}, false );
-
-	var openOptionsBtn = document.getElementById( "controls" );
-	openOptionsBtn.addEventListener( "click", function( event ) {
+	// options heading
+	btns.options.addEventListener( "click", function( event ) {
 		var menu = document.getElementById( "menu" );
 		menu.removeAttribute( "class" );
 		var controls = document.getElementById( "controls" );
 		controls.setAttribute( "class", "open" );
 	}, false );
 
-	var saveFavBtn = document.getElementById( "save-fav" );
-	saveFavBtn.addEventListener( "click", function( event ) {
+	// randomize button
+	btns.randomize.addEventListener( "click", function( event ) {
+		Colors.random_color();
+		if ( Colors.cycle_favs ) {
+			Colors.cycle_favs = false;
+			Colors.cycle_random = true;
+			btns.cycleFavs.innerHTML = "cycle favs";
+			btns.cycleRand.innerHTML = "&#10003; cycle random";
+			Cycle.reset();
+		}
+	}, false );
+
+	// save favorite button
+	btns.save.addEventListener( "click", function( event ) {
 		var confirm = document.getElementById( "color-confirm" );
 		confirm.setAttribute( "class", "confirm" );
 	}, false );
-
-	var saveYesBtn = document.getElementById( "color-yes" );
-	saveYesBtn.addEventListener( "click", function( event ) {
+	// confirm save button
+	btns.saveYes.addEventListener( "click", function( event ) {
 		var colors = {
 			b: bg,
 			l: live,
@@ -130,114 +136,109 @@ function init() {
 			d3: dead3
 		}
 		favorites.array.push( colors );
-		save_ls();
+		Colors.save_ls();
 		var confirm = document.getElementById( "color-confirm" );
 		confirm.setAttribute( "class", "confirm hidden" );
 	}, false );
-
-	var saveNoBtn = document.getElementById( "color-no" );
-	saveNoBtn.addEventListener( "click", function( event ) {
+	// cancel save button
+	btns.saveNo.addEventListener( "click", function( event ) {
 		var confirm = document.getElementById( "color-confirm" );
 		confirm.setAttribute( "class", "confirm hidden" );
 	}, false );
-	saveFavBtn.innerHTML = "save fav (" + favorites.array.length + ")";
+	btns.save.innerHTML = "save fav (" + favorites.array.length + ")";
 
-	var nextFavBtn = document.getElementById( "next-fav" );
-	nextFavBtn.addEventListener( "click", function( event ) {
-		next_fav();
-		if ( cycle_random ) {
-			cycle_favs = true;
-			cycle_random = false;
-			var cycleFavsBtn = document.getElementById( "cycle-favs" );
-			var cycleRandomBtn = document.getElementById( "cycle-random" );
-			cycleFavsBtn.innerHTML = "&#10003; cycle favs";
-			cycleRandomBtn.innerHTML = "cycle random";
-			reset_cycle();
+	// next favorite button
+	btns.next.addEventListener( "click", function( event ) {
+		Colors.next_fav();
+		if ( Colors.cycle_random ) {
+			Colors.cycle_favs = true;
+			Colors.cycle_random = false;
+			btns.cycleFavs.innerHTML = "&#10003; cycle favs";
+			btns.cycleRand.innerHTML = "cycle random";
+			Cycle.reset();
 		}
 	}, false );
 
-	var deleteFavBtn = document.getElementById( "delete-fav" );
-	deleteFavBtn.addEventListener( "click", function( event ) {
+	// delete favorite button
+	btns.delete.addEventListener( "click", function( event ) {
 		var confirm = document.getElementById( "delete-confirm" );
 		confirm.setAttribute( "class", "confirm" );
 	}, false );
-
-	var deleteYesBtn = document.getElementById( "delete-yes" );
-	deleteYesBtn.addEventListener( "click", function( event ) {
-		favorites.array.splice( favIndex, 1 );
+	// confirm delete button
+	btns.delYes.addEventListener( "click", function( event ) {
+		favorites.array.splice( Colors.favIndex, 1 );
 		if ( favorites.array.length < 1 ) {
-			favIndex = 0;
-			set_default();
+			Colors.favIndex = 0;
+			Colors.set_default();
 		}
-		save_ls();
-		next_fav();
+		Colors.save_ls();
+		Colors.next_fav();
+		var confirm = document.getElementById( "delete-confirm" );
+		confirm.setAttribute( "class", "confirm hidden" );
+	}, false);
+	// cancel delete button
+	btns.delNo.addEventListener( "click", function( event ) {
 		var confirm = document.getElementById( "delete-confirm" );
 		confirm.setAttribute( "class", "confirm hidden" );
 	}, false);
 
-	var deleteNoBtn = document.getElementById( "delete-no" );
-	deleteNoBtn.addEventListener( "click", function( event ) {
-		var confirm = document.getElementById( "delete-confirm" );
-		confirm.setAttribute( "class", "confirm hidden" );
-	}, false);
-
-	var cycleFavsBtn = document.getElementById( "cycle-favs" );
-	var cycleRandomBtn = document.getElementById( "cycle-random" );
-	cycleFavsBtn.addEventListener( "click", function( event) {
-		if ( cycle_favs ) {
-			cycle_favs = false;
+	// cycle favorites toggle
+	btns.cycleFavs.addEventListener( "click", function( event) {
+		if ( Colors.cycle_favs ) {
+			Colors.cycle_favs = false;
 			this.innerHTML = "cycle favs"
-			cycleRandomBtn.innerHTML = "cycle random";
+			btns.cycleRand.innerHTML = "cycle random";
 		} else {
-			cycle_favs = true;
-			cycle_random = false;
+			Colors.cycle_favs = true;
+			Colors.cycle_random = false;
 			this.innerHTML = "&#10003; cycle favs"
-			cycleRandomBtn.innerHTML = "cycle random";
+			btns.cycleRand.innerHTML = "cycle random";
 		}
-		cycle_colors();
+		Colors.go_next();
 	}, false );
-	cycleRandomBtn.addEventListener( "click", function( event) {
-		if ( cycle_random ) {
-			cycle_random = false;
+	btns.cycleRand.addEventListener( "click", function( event) {
+		if ( Colors.cycle_random ) {
+			Colors.cycle_random = false;
 			this.innerHTML = "cycle random"
-			cycleFavsBtn.innerHTML = "cycle favs";
+			btns.cycleFavs.innerHTML = "cycle favs";
 		} else {
-			cycle_random = true;
-			cycle_favs = false;
+			Colors.cycle_random = true;
+			Colors.cycle_favs = false;
 			this.innerHTML = "&#10003; cycle random"
-			cycleFavsBtn.innerHTML = "cycle favs";
+			btns.cycleFavs.innerHTML = "cycle favs";
 		}
-		cycle_colors();
+		Colors.go_next();
 	}, false );
 
-	var cycleSpeedBtn = document.getElementById( "cycle-speed" );
-	cycleSpeedBtn.addEventListener( "click", function( event ) {
-		if ( cIntIndex < cIntervals.length-1 ) {
-			cIntIndex += 1;
+	// cycle speed toggle
+	btns.cycleSpeed.addEventListener( "click", function( event ) {
+		if ( Cycle.cIntIndex < Cycle.cIntervals.length-1 ) {
+			Cycle.cIntIndex += 1;
 		} else {
-			cIntIndex = 0;
+			Cycle.cIntIndex = 0;
 		}
-		reset_cycle();
+		Cycle.reset();
 	}, false );
 
-	var pauseBtn = document.getElementById( "pause" );
-	pauseBtn.addEventListener( "click", function( event ) {
+	// pause/play toggle
+	btns.pause.addEventListener( "click", function( event ) {
 		if ( !pause ) {
-			goL.stop();
+			GoL.stop();
 			pause = true;
-			clearInterval( colorCycle );
+			Cycle.pause();
 			this.innerHTML = "play";
 		} else {
-			goL.start();
+			GoL.start();
 			pause = false;
-			reset_cycle();
+			Cycle.reset();
 			this.innerHTML = "pause";
 		}
 	}, false);
 };
 
+
 // GAME CONTROLLER
-var goL = {
+var GoL = {
 	render: function() {
 		ctx.restore(); // reset the canvas each frame
 		ctx.clearRect( 0, 0, width * unit, height * unit );
@@ -265,7 +266,7 @@ var goL = {
 			ctx.fillRect( row, col, unit, unit );
 		}
 		if ( !fps ) {
-			window.requestAnimationFrame( goL.parse_world );
+			window.requestAnimationFrame( GoL.parse_world );
 		}
 	},
 	parse_world: function() {
@@ -370,24 +371,19 @@ var goL = {
 			hatch();
 			counter = 0;
 		}
-		goL.render();
+		GoL.render();
 	},
 	start: function() {
 		if ( !fps ) {
-			window.requestAnimationFrame( goL.parse_world );
+			window.requestAnimationFrame( GoL.parse_world );
 		} else {
-			playing = setInterval( goL.parse_world, (1000/fps) );
+			playing = setInterval( GoL.parse_world, (1000/fps) );
 		}
 	},
 	stop: function() {
 		clearInterval( playing );
 	}
 };
-
-function random( a, b ) {
-	var c = b - a;
-	return Math.floor( Math.random()*c+a );
-}
 
 function hatch() {
 	var re = new RegExp( "00.{"+(width-2)+"}00", "g" ), // "egg" search
@@ -431,53 +427,125 @@ function hatch() {
 	}
 };
 
-function cycle_colors() {
-	if ( cycle_favs ) {
-		next_fav();
-	} else if ( cycle_random ) {
-		random_color();
+var Colors = {
+	cycle_favs: true,
+	cycle_random: false,
+	favIndex: 0,
+	go_next: function() {
+		if ( Colors.cycle_favs ) {
+			Colors.next_fav();
+		} else if ( Colors.cycle_random ) {
+			Colors.random_color();
+		}
+	},
+	next_fav: function() {
+		if ( Colors.favIndex < favorites.array.length-1 ) {
+			Colors.favIndex += 1;
+		} else {
+			Colors.favIndex = 0;
+		}
+		bg = favorites.array[ Colors.favIndex ].b;
+		live = favorites.array[ Colors.favIndex ].l;
+		dead = favorites.array[ Colors.favIndex ].d;
+		dead2 = favorites.array[ Colors.favIndex ].d2;
+		dead3 = favorites.array[ Colors.favIndex ].d3;
+		Cycle.reset();
+	},
+	random_color: function() {
+		bg = [ Math.floor( random(0,255) ), Math.floor( random(0,255) ), Math.floor( random(0,255) ) ];
+		live = [ Math.floor( random(0,255) ), Math.floor( random(0,255) ), Math.floor( random(0,255) ) ];
+		dead = [ Math.floor( random(0,255) ), Math.floor( random(0,255) ), Math.floor( random(0,255) ) ];
+		dead2 = [
+			Math.floor( Number( dead[0] + (bg[0] - dead[0])*(1/3) ) ),
+			Math.floor( Number( dead[1] + (bg[1] - dead[1])*(1/3) ) ),
+			Math.floor( Number( dead[2] + (bg[2] - dead[2])*(1/3) ) ),
+		];
+		dead3 = [
+			Math.floor( Number( dead[0] + (bg[0] - dead[0])*(2/3) ) ),
+			Math.floor( Number( dead[1] + (bg[1] - dead[1])*(2/3) ) ),
+			Math.floor( Number( dead[2] + (bg[2] - dead[2])*(2/3) ) ),
+		];
+		Cycle.reset();
+	},
+	set_default: function() {
+		bg = [255, 255, 255]
+		live = [0, 0, 0]
+		dead = [255, 0, 0]
+		dead2 = [
+			Math.floor( Number( dead[0] + (bg[0] - dead[0])*(1/3) ) ),
+			Math.floor( Number( dead[1] + (bg[1] - dead[1])*(1/3) ) ),
+			Math.floor( Number( dead[2] + (bg[2] - dead[2])*(1/3) ) ),
+		];
+		dead3 = [
+			Math.floor( Number( dead[0] + (bg[0] - dead[0])*(2/3) ) ),
+			Math.floor( Number( dead[1] + (bg[1] - dead[1])*(2/3) ) ),
+			Math.floor( Number( dead[2] + (bg[2] - dead[2])*(2/3) ) ),
+		];
+		favorites = { array: [
+			{
+				b: bg,
+				l: live,
+				d: dead,
+				d2: dead2,
+				d3: dead3
+			}
+		]};
+		Colors.save_ls();
+	},
+	save_ls: function() {
+		var favstr = JSON.stringify( favorites );
+		window.localStorage.setItem( "GoL_colors", favstr );
+		btns.save.innerHTML = "save fav (" + favorites.array.length + ")";
 	}
 };
 
-function random_color() {
-	bg = [ Math.floor( random(0,255) ), Math.floor( random(0,255) ), Math.floor( random(0,255) ) ];
-	live = [ Math.floor( random(0,255) ), Math.floor( random(0,255) ), Math.floor( random(0,255) ) ];
-	dead = [ Math.floor( random(0,255) ), Math.floor( random(0,255) ), Math.floor( random(0,255) ) ];
-	dead2 = [
-		Math.floor( Number( dead[0] + (bg[0] - dead[0])*(1/3) ) ),
-		Math.floor( Number( dead[1] + (bg[1] - dead[1])*(1/3) ) ),
-		Math.floor( Number( dead[2] + (bg[2] - dead[2])*(1/3) ) ),
-	];
-	dead3 = [
-		Math.floor( Number( dead[0] + (bg[0] - dead[0])*(2/3) ) ),
-		Math.floor( Number( dead[1] + (bg[1] - dead[1])*(2/3) ) ),
-		Math.floor( Number( dead[2] + (bg[2] - dead[2])*(2/3) ) ),
-	];
-	reset_cycle();
-};
-
-function next_fav() {
-	if ( favIndex < favorites.array.length-1 ) {
-		favIndex += 1;
-	} else {
-		favIndex = 0;
+var Cycle = {
+	cInterval: 10000,
+	cIntervals: [ 5000, 10000, 20000, 30000, 60000 ],
+	cIntLabels: [ "5s", "10s", "20s", "30s", "60s" ],
+	cIntIndex: 1,
+	counter: 0,
+	reset: function() {
+		clearInterval( cycleInt );
+		cycleInt = setInterval( Colors.go_next, Cycle.cIntervals[ Cycle.cIntIndex ] );
+		btns.cycleSpeed.innerHTML = "cycle speed " + Cycle.cIntLabels[ Cycle.cIntIndex ];
+		Cycle.reset_counter();
+	},
+	update_counter: function() {
+		if ( Cycle.counter !== Cycle.cIntervals[ Cycle.cIntIndex ] ) {
+			Cycle.counter += 1000;
+		} else {
+			Cycle.counter = 0;
+		}
+		var time = ( Cycle.cIntervals[ Cycle.cIntIndex ] - Cycle.counter ) / 1000;
+		btns.countdown.innerHTML = "next: " + time + "s";
+	},
+	reset_counter: function() {
+		Cycle.counter= 0;
+		var time = ( Cycle.cIntervals[ Cycle.cIntIndex ] - Cycle.counter ) / 1000;
+		btns.countdown.innerHTML = "next: " + time + "s";
+		clearInterval( cycleCounterInt );
+		cycleCounterInt = setInterval( Cycle.update_counter, 1000 );
+	},
+	pause: function() {
+		clearInterval( cycleInt );
+		clearInterval( cycleCounterInt );
 	}
-	bg = favorites.array[ favIndex ].b;
-	live = favorites.array[ favIndex ].l;
-	dead = favorites.array[ favIndex ].d;
-	dead2 = favorites.array[ favIndex ].d2;
-	dead3 = favorites.array[ favIndex ].d3;
-	reset_cycle();
 };
 
+// cycle intervals
+var cycleInt = setInterval( Colors.go_next, Cycle.cIntervals[ Cycle.cIntIndex ] );
+var cycleCounterInt = setInterval( Cycle.update_counter, 1000 );
+
+// random functions, *literally*
 function shuffle( array ) {
 	var currentIndex = array.length, temporaryValue, randomIndex;
-	// While there remain elements to shuffle...
+	// while there remain elements to shuffle...
 	while (0 !== currentIndex) {
-		// Pick a remaining element...
+		// pick a remaining element...
 		randomIndex = Math.floor(Math.random() * currentIndex);
 		currentIndex -= 1;
-		// And swap it with the current element.
+		// and swap it with the current element
 		temporaryValue = array[currentIndex];
 		array[currentIndex] = array[randomIndex];
 		array[randomIndex] = temporaryValue;
@@ -485,65 +553,9 @@ function shuffle( array ) {
 	return array;
 };
 
-function reset_cycle() {
-	clearInterval( colorCycle );
-	colorCycle = setInterval( cycle_colors, cIntervals[ cIntIndex ] );
-	var cycleSpeedBtn = document.getElementById( "cycle-speed" );
-	cycleSpeedBtn.innerHTML = "cycle speed " + cIntLabels[ cIntIndex ];
-	reset_cycle_counter();
+function random( a, b ) {
+	var c = b - a;
+	return Math.floor( Math.random()*c+a );
 };
-
-function set_default() {
-	bg = [255, 255, 255]
-	live = [0, 0, 0]
-	dead = [255, 0, 0]
-	dead2 = [
-		Math.floor( Number( dead[0] + (bg[0] - dead[0])*(1/3) ) ),
-		Math.floor( Number( dead[1] + (bg[1] - dead[1])*(1/3) ) ),
-		Math.floor( Number( dead[2] + (bg[2] - dead[2])*(1/3) ) ),
-	];
-	dead3 = [
-		Math.floor( Number( dead[0] + (bg[0] - dead[0])*(2/3) ) ),
-		Math.floor( Number( dead[1] + (bg[1] - dead[1])*(2/3) ) ),
-		Math.floor( Number( dead[2] + (bg[2] - dead[2])*(2/3) ) ),
-	];
-	favorites = { array: [
-		{
-			b: bg,
-			l: live,
-			d: dead,
-			d2: dead2,
-			d3: dead3
-		}
-	]};
-	save_ls();
-}
-
-function save_ls() {
-	var favstr = JSON.stringify( favorites );
-	window.localStorage.setItem( "GoL_colors", favstr );
-	var saveFavBtn = document.getElementById( "save-fav" );
-	saveFavBtn.innerHTML = "save fav (" + favorites.array.length + ")";
-}
-
-function update_cycle_counter() {
-	if ( cycleCounter !== cIntervals[ cIntIndex ] ) {
-		cycleCounter += 1000;
-	} else {
-		cycleCounter = 0;
-	}
-	var countdownBtn = document.getElementById( "countdown" );
-	var time = ( cIntervals[ cIntIndex ] - cycleCounter ) / 1000;
-	countdownBtn.innerHTML = "next: " + time + "s";
-}
-
-function reset_cycle_counter() {
-	cycleCounter = 0;
-	var countdownBtn = document.getElementById( "countdown" );
-	var time = ( cIntervals[ cIntIndex ] - cycleCounter ) / 1000;
-	countdownBtn.innerHTML = "next: " + time + "s";
-	clearInterval( cycleCounterInt );
-	cycleCounterInt = setInterval( update_cycle_counter, 1000 );
-}
 
 // the end.
