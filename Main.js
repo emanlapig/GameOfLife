@@ -212,10 +212,10 @@ function init() {
 
 	// cycle speed toggle
 	btns.cycleSpeed.addEventListener( "click", function( event ) {
-		if ( Cycle.cIntIndex < Cycle.cIntervals.length-1 ) {
-			Cycle.cIntIndex += 1;
+		if ( Cycle.intIndex < Cycle.intervals.length-1 ) {
+			Cycle.intIndex += 1;
 		} else {
-			Cycle.cIntIndex = 0;
+			Cycle.intIndex = 0;
 		}
 		Cycle.reset();
 	}, false );
@@ -500,29 +500,28 @@ var Colors = {
 };
 
 var Cycle = {
-	cInterval: 10000,
-	cIntervals: [ 5000, 10000, 20000, 30000, 60000 ],
-	cIntLabels: [ "5s", "10s", "20s", "30s", "60s" ],
-	cIntIndex: 1,
+	intervals: [ 5000, 10000, 20000, 30000, 60000 ],
+	intLabels: [ "5s", "10s", "20s", "30s", "60s" ],
+	intIndex: 1,
 	counter: 0,
 	reset: function() {
 		clearInterval( cycleInt );
-		cycleInt = setInterval( Colors.go_next, Cycle.cIntervals[ Cycle.cIntIndex ] );
-		btns.cycleSpeed.innerHTML = "cycle speed " + Cycle.cIntLabels[ Cycle.cIntIndex ];
+		cycleInt = setInterval( Colors.go_next, Cycle.intervals[ Cycle.intIndex ] );
+		btns.cycleSpeed.innerHTML = "cycle speed " + Cycle.intLabels[ Cycle.intIndex ];
 		Cycle.reset_counter();
 	},
 	update_counter: function() {
-		if ( Cycle.counter !== Cycle.cIntervals[ Cycle.cIntIndex ] ) {
+		if ( Cycle.counter !== Cycle.intervals[ Cycle.intIndex ] ) {
 			Cycle.counter += 1000;
 		} else {
 			Cycle.counter = 0;
 		}
-		var time = ( Cycle.cIntervals[ Cycle.cIntIndex ] - Cycle.counter ) / 1000;
+		var time = ( Cycle.intervals[ Cycle.intIndex ] - Cycle.counter ) / 1000;
 		btns.countdown.innerHTML = "next: " + time + "s";
 	},
 	reset_counter: function() {
 		Cycle.counter= 0;
-		var time = ( Cycle.cIntervals[ Cycle.cIntIndex ] - Cycle.counter ) / 1000;
+		var time = ( Cycle.intervals[ Cycle.intIndex ] - Cycle.counter ) / 1000;
 		btns.countdown.innerHTML = "next: " + time + "s";
 		clearInterval( cycleCounterInt );
 		cycleCounterInt = setInterval( Cycle.update_counter, 1000 );
@@ -534,7 +533,7 @@ var Cycle = {
 };
 
 // cycle intervals
-var cycleInt = setInterval( Colors.go_next, Cycle.cIntervals[ Cycle.cIntIndex ] );
+var cycleInt = setInterval( Colors.go_next, Cycle.intervals[ Cycle.intIndex ] );
 var cycleCounterInt = setInterval( Cycle.update_counter, 1000 );
 
 // random functions, *literally*
