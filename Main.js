@@ -112,9 +112,9 @@ function init() {
 	// randomize button
 	btns.randomize.addEventListener( "click", function( event ) {
 		Colors.random_color();
-		if ( Colors.cycle_favs ) {
-			Colors.cycle_favs = false;
-			Colors.cycle_random = true;
+		if ( Cycle.cycle_favs ) {
+			Cycle.cycle_favs = false;
+			Cycle.cycle_random = true;
 			btns.cycleFavs.innerHTML = "cycle favs";
 			btns.cycleRand.innerHTML = "&#10003; cycle random";
 			Cycle.reset();
@@ -150,9 +150,9 @@ function init() {
 	// next favorite button
 	btns.next.addEventListener( "click", function( event ) {
 		Colors.next_fav();
-		if ( Colors.cycle_random ) {
-			Colors.cycle_favs = true;
-			Colors.cycle_random = false;
+		if ( Cycle.cycle_random ) {
+			Cycle.cycle_favs = true;
+			Cycle.cycle_random = false;
 			btns.cycleFavs.innerHTML = "&#10003; cycle favs";
 			btns.cycleRand.innerHTML = "cycle random";
 			Cycle.reset();
@@ -184,26 +184,26 @@ function init() {
 
 	// cycle favorites toggle
 	btns.cycleFavs.addEventListener( "click", function( event) {
-		if ( Colors.cycle_favs ) {
-			Colors.cycle_favs = false;
+		if ( Cycle.cycle_favs ) {
+			Cycle.cycle_favs = false;
 			this.innerHTML = "cycle favs"
 			btns.cycleRand.innerHTML = "cycle random";
 		} else {
-			Colors.cycle_favs = true;
-			Colors.cycle_random = false;
+			Cycle.cycle_favs = true;
+			Cycle.cycle_random = false;
 			this.innerHTML = "&#10003; cycle favs"
 			btns.cycleRand.innerHTML = "cycle random";
 		}
 		Colors.go_next();
 	}, false );
 	btns.cycleRand.addEventListener( "click", function( event) {
-		if ( Colors.cycle_random ) {
-			Colors.cycle_random = false;
+		if ( Cycle.cycle_random ) {
+			Cycle.cycle_random = false;
 			this.innerHTML = "cycle random"
 			btns.cycleFavs.innerHTML = "cycle favs";
 		} else {
-			Colors.cycle_random = true;
-			Colors.cycle_favs = false;
+			Cycle.cycle_random = true;
+			Cycle.cycle_favs = false;
 			this.innerHTML = "&#10003; cycle random"
 			btns.cycleFavs.innerHTML = "cycle favs";
 		}
@@ -428,13 +428,11 @@ function hatch() {
 };
 
 var Colors = {
-	cycle_favs: true,
-	cycle_random: false,
 	favIndex: 0,
 	go_next: function() {
-		if ( Colors.cycle_favs ) {
+		if ( Cycle.cycle_favs ) {
 			Colors.next_fav();
-		} else if ( Colors.cycle_random ) {
+		} else if ( Cycle.cycle_random ) {
 			Colors.random_color();
 		}
 	},
@@ -500,6 +498,8 @@ var Colors = {
 };
 
 var Cycle = {
+	cycle_favs: true,
+	cycle_random: false,
 	intervals: [ 5000, 10000, 20000, 30000, 60000 ],
 	intLabels: [ "5s", "10s", "20s", "30s", "60s" ],
 	intIndex: 1,
