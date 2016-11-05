@@ -338,9 +338,8 @@ var Cycle = {
 		UI.btns.countdown.innerHTML = "next: " + time + "s";
 	},
 	reset_counter: function() {
-		Cycle.counter= 0;
-		var time = ( Cycle.intervals[ Cycle.intIndex ] - Cycle.counter ) / 1000;
-		UI.btns.countdown.innerHTML = "next: " + time + "s";
+		Cycle.counter = Cycle.intervals[ Cycle.intIndex ];
+		Cycle.update_counter();
 		clearInterval( cycleCounterInt );
 		cycleCounterInt = setInterval( Cycle.update_counter, 1000 );
 	},
