@@ -88,27 +88,26 @@ var GoL = {
 				, i7 = i+width
 				, i8 = i+width+1;
 
-			var indices = [ i1, i2, i3, i4, i5, i6, i7, i8 ]
-				, cells = [ 0, 0, 0, 0, 0, 0, 0, 0 ]
+			var neighbors = [ i1, i2, i3, i4, i5, i6, i7, i8 ]
 				, sum = 0; // total # of neighbors
 
-			for ( var j=0; j<indices.length; j++ ) {
+			for ( var j=0; j<neighbors.length; j++ ) {
 				// world vertical wrap
-				if ( indices[j] >= 0 && indices[j] <= world.length ) {
-					var look = indices[j];
-				} else if ( indices[j] < 0 ) {
-					var look = indices[j] + world.length;
-				} else if ( indices[j] > world.length ) {
-					var look = indices[j] - world.length;
+				if ( neighbors[j] >= 0 && neighbors[j] <= world.length ) {
+					var look = neighbors[j];
+				} else if ( neighbors[j] < 0 ) {
+					var look = neighbors[j] + world.length;
+				} else if ( neighbors[j] > world.length ) {
+					var look = neighbors[j] - world.length;
 				}
 				// evaluate dual-state key of this neighbor (0 or 1, no ghosts)
 				if ( j < 4 ) { // already iterated over these
-					cells[j] = ( keyFrom[ world[look] ] > 3 )? 1 : 0; 
+					var cell = ( keyFrom[ world[look] ] > 3 )? 1 : 0; 
 				} else { // haven't iterated over yet
-					cells[j] = ( keyTo[ world[look] ] > 3 )? 1 : 0; 
+					var cell = ( keyTo[ world[look] ] > 3 )? 1 : 0; 
 				}
 				// add up neighbors
-				sum += cells[j];
+				sum += cell;
 			}
 
 			var to = keyTo[ world[i] ];
