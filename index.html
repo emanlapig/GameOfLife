@@ -4,7 +4,8 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 	<link rel="apple-touch-icon" href="icon.png">
 	<title>Game of Life</title>
-	<script type="text/javascript" src="Main.min.js"></script>
+	<script type="text/javascript" src="Game.min.js"></script>
+	<script type="text/javascript" src="UI.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
@@ -12,7 +13,7 @@
 	</canvas>
 
 	<div id="controls">
-		<span class="small">options</span><br>
+		<span id="options-btn" class="small">options</span><br>
 		<span id="menu" class="hidden">
 			<a class="btn" id="randomize" href="javascript:;">randomize</a><br>
 			<a class="btn" id="save-fav" href="javascript:;">save fav</a><br>
