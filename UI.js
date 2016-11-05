@@ -2,6 +2,46 @@
 
 var favorites = window.localStorage.getItem("GoL_colors"); // load favorite colors from localStorage
 
+function init() {
+	// favorite colors
+	if ( favorites === null ) { // if we don't have favorites, set and use the default scheme
+		Colors.set_default();
+	} else {
+		favorites = JSON.parse( window.localStorage.getItem("GoL_colors") );
+		shuffle( favorites.array ); // randomize our favorites list
+		bg = favorites.array[0].b;
+		live = favorites.array[0].l;
+		dead = favorites.array[0].d;
+		dead2 = favorites.array[0].d2;
+		dead3 = favorites.array[0].d3;
+	};
+
+	canvas = document.getElementById( "stage" );
+	ctx = canvas.getContext( '2d' );
+	canvas.width = width * unit;
+	canvas.height = height * unit;
+
+	// generate random world seed
+	for ( var i=0; i<total; i++ ) {
+		var rand = ( Math.floor( Math.random() * 2 ) == 0 );
+		if (rand) {
+			world.push(9);
+		} else {
+			world.push(0);
+		}
+		if ( i === total-1 ) {
+			//console.log("world ready");
+			GoL.render();
+			GoL.start();
+		}
+	}
+
+	UI.init();
+	// event listeners for options menu toggle
+	canvas.addEventListener( "click", UI.btn_functions.toggle_options, false );
+	UI.btns.options.addEventListener( "click", UI.btn_functions.toggle_options, false );
+};
+
 var UI = {
 	btns: {},
 	btn_functions: {
@@ -36,7 +76,9 @@ var UI = {
 		save_fav: function() {
 			var confirm = document.getElementById( "color-confirm" );
 			confirm.setAttribute( "class", "confirm" );
-			UI.btn_functions.pause();
+			if ( !pause ) {
+				UI.btn_functions.pause();
+			}
 		},
 		save_fav_yes: function() {
 			var colors = {
@@ -50,12 +92,16 @@ var UI = {
 			Colors.save_ls();
 			var confirm = document.getElementById( "color-confirm" );
 			confirm.setAttribute( "class", "confirm hidden" );
-			UI.btn_functions.pause();
+			if ( pause ) {
+				UI.btn_functions.pause();
+			}
 		},
 		save_fav_no: function() {
 			var confirm = document.getElementById( "color-confirm" );
 			confirm.setAttribute( "class", "confirm hidden" );
-			UI.btn_functions.pause();
+			if ( pause ) {
+				UI.btn_functions.pause();
+			}
 		},
 		next_fav: function() {
 			Colors.next_fav();
@@ -70,7 +116,9 @@ var UI = {
 		del_fav: function() {
 			var confirm = document.getElementById( "delete-confirm" );
 			confirm.setAttribute( "class", "confirm" );
-			UI.btn_functions.pause();
+			if ( !pause ) {
+				UI.btn_functions.pause();
+			}
 		},
 		del_fav_yes: function() {
 			favorites.array.splice( Colors.favIndex, 1 );
@@ -82,12 +130,16 @@ var UI = {
 			Colors.next_fav();
 			var confirm = document.getElementById( "delete-confirm" );
 			confirm.setAttribute( "class", "confirm hidden" );
-			UI.btn_functions.pause();
+			if ( pause ) {
+				UI.btn_functions.pause();
+			}
 		},
 		del_fav_no: function() {
 			var confirm = document.getElementById( "delete-confirm" );
 			confirm.setAttribute( "class", "confirm hidden" );
-			UI.btn_functions.pause();
+			if ( pause ) {
+				UI.btn_functions.pause();
+			}
 		},
 		cycle_favs: function() {
 			if ( Cycle.cycle_favs ) {
@@ -266,13 +318,12 @@ var Cycle = {
 	cycle_favs: true,
 	cycle_random: false,
 	intervals: [ 5000, 10000, 20000, 30000, 60000 ],
-	intLabels: [ "5s", "10s", "20s", "30s", "60s" ],
 	intIndex: 1,
 	counter: 0,
 	reset: function() {
 		clearInterval( cycleInt );
 		cycleInt = setInterval( Colors.go_next, Cycle.intervals[ Cycle.intIndex ] );
-		UI.btns.cycleSpeed.innerHTML = "cycle speed " + Cycle.intLabels[ Cycle.intIndex ];
+		UI.btns.cycleSpeed.innerHTML = "cycle speed " + ( Cycle.intervals[ Cycle.intIndex ] / 1000 ) + "s";
 		Cycle.reset_counter();
 	},
 	update_counter: function() {

@@ -41,47 +41,6 @@ var keyTo = [ 4, 3, 4, 2, 4, 1, 4, 0, 4, 0 ];
 var keyFrom = [ 4, 4, 3, 3, 2, 2, 1, 1, 0, 0 ];
 
 
-function init() {
-	// favorite colors
-	if ( favorites === null ) { // if we don't have favorites, set and use the default scheme
-		Colors.set_default();
-	} else {
-		favorites = JSON.parse( window.localStorage.getItem("GoL_colors") );
-		shuffle( favorites.array ); // randomize our favorites list
-		bg = favorites.array[0].b;
-		live = favorites.array[0].l;
-		dead = favorites.array[0].d;
-		dead2 = favorites.array[0].d2;
-		dead3 = favorites.array[0].d3;
-	};
-
-	canvas = document.getElementById( "stage" );
-	ctx = canvas.getContext( '2d' );
-	canvas.width = width * unit;
-	canvas.height = height * unit;
-
-	// generate random world seed
-	for ( var i=0; i<total; i++ ) {
-		var rand = ( Math.floor( Math.random() * 2 ) == 0 );
-		if (rand) {
-			world.push(9);
-		} else {
-			world.push(0);
-		}
-		if ( i === total-1 ) {
-			console.log("world ready");
-			GoL.render();
-			GoL.start();
-		}
-	}
-
-	UI.init();
-	// event listeners for options menu toggle
-	canvas.addEventListener( "click", UI.btn_functions.toggle_options, false );
-	UI.btns.options.addEventListener( "click", UI.btn_functions.toggle_options, false );
-};
-
-
 // GAME CONTROLLER
 var GoL = {
 	render: function() {
