@@ -43,24 +43,24 @@ function init() {
 };
 
 var UI = {
+	options_open: false,
 	btns: {},
 	btn_functions: {
-		options_open: false,
 		toggle_options: function() {
-			if ( !UI.btn_functions.options_open ) {
+			if ( !UI.options_open ) {
 				var menu = document.getElementById( "menu" );
 				menu.removeAttribute( "class" );
 				var controls = document.getElementById( "controls" );
 				controls.setAttribute( "class", "open" );
 				UI.bind_btn_events();
-				UI.btn_functions.options_open = true;
+				UI.options_open = true;
 			} else {
 				var menu = document.getElementById( "menu" );
 				menu.setAttribute( "class", "hidden" );
 				var controls = document.getElementById( "controls" );
 				controls.removeAttribute( "class" );
 				UI.unbind_btn_events();
-				UI.btn_functions.options_open = false;
+				UI.options_open = false;
 			}
 		},
 		randomize: function() {
@@ -73,34 +73,36 @@ var UI = {
 				Cycle.reset();
 			}
 		},
-		save_fav: function() {
-			var confirm = document.getElementById( "color-confirm" );
-			confirm.setAttribute( "class", "confirm" );
-			if ( !pause ) {
-				UI.btn_functions.pause();
-			}
-		},
-		save_fav_yes: function() {
-			var colors = {
-				b: bg,
-				l: live,
-				d: dead,
-				d2: dead2,
-				d3: dead3
-			}
-			favorites.array.push( colors );
-			Colors.save_ls();
-			var confirm = document.getElementById( "color-confirm" );
-			confirm.setAttribute( "class", "confirm hidden" );
-			if ( pause ) {
-				UI.btn_functions.pause();
-			}
-		},
-		save_fav_no: function() {
-			var confirm = document.getElementById( "color-confirm" );
-			confirm.setAttribute( "class", "confirm hidden" );
-			if ( pause ) {
-				UI.btn_functions.pause();
+		save_fav: {
+			confirm: function() {
+				var confirm = document.getElementById( "color-confirm" );
+				confirm.setAttribute( "class", "confirm" );
+				if ( !pause ) {
+					UI.btn_functions.pause();
+				}
+			},
+			yes: function() {
+				var colors = {
+					b: bg,
+					l: live,
+					d: dead,
+					d2: dead2,
+					d3: dead3
+				}
+				favorites.array.push( colors );
+				Colors.save_ls();
+				var confirm = document.getElementById( "color-confirm" );
+				confirm.setAttribute( "class", "confirm hidden" );
+				if ( pause ) {
+					UI.btn_functions.pause();
+				}
+			},
+			no: function() {
+				var confirm = document.getElementById( "color-confirm" );
+				confirm.setAttribute( "class", "confirm hidden" );
+				if ( pause ) {
+					UI.btn_functions.pause();
+				}	
 			}
 		},
 		next_fav: function() {
@@ -113,32 +115,34 @@ var UI = {
 				Cycle.reset();
 			}
 		},
-		del_fav: function() {
-			var confirm = document.getElementById( "delete-confirm" );
-			confirm.setAttribute( "class", "confirm" );
-			if ( !pause ) {
-				UI.btn_functions.pause();
-			}
-		},
-		del_fav_yes: function() {
-			favorites.array.splice( Colors.favIndex, 1 );
-			if ( favorites.array.length < 1 ) {
-				Colors.favIndex = 0;
-				Colors.set_default();
-			}
-			Colors.save_ls();
-			Colors.next_fav();
-			var confirm = document.getElementById( "delete-confirm" );
-			confirm.setAttribute( "class", "confirm hidden" );
-			if ( pause ) {
-				UI.btn_functions.pause();
-			}
-		},
-		del_fav_no: function() {
-			var confirm = document.getElementById( "delete-confirm" );
-			confirm.setAttribute( "class", "confirm hidden" );
-			if ( pause ) {
-				UI.btn_functions.pause();
+		del_fav: {
+			confirm: function() {
+				var confirm = document.getElementById( "delete-confirm" );
+				confirm.setAttribute( "class", "confirm" );
+				if ( !pause ) {
+					UI.btn_functions.pause();
+				}
+			},
+			yes: function() {
+				favorites.array.splice( Colors.favIndex, 1 );
+				if ( favorites.array.length < 1 ) {
+					Colors.favIndex = 0;
+					Colors.set_default();
+				}
+				Colors.save_ls();
+				Colors.next_fav();
+				var confirm = document.getElementById( "delete-confirm" );
+				confirm.setAttribute( "class", "confirm hidden" );
+				if ( pause ) {
+					UI.btn_functions.pause();
+				}
+			},
+			no: function() {
+				var confirm = document.getElementById( "delete-confirm" );
+				confirm.setAttribute( "class", "confirm hidden" );
+				if ( pause ) {
+					UI.btn_functions.pause();
+				}
 			}
 		},
 		cycle_favs: function() {
@@ -146,13 +150,12 @@ var UI = {
 				Cycle.cycle_favs = false;
 				this.innerHTML = "cycle favs"
 				UI.btns.cycleRand.innerHTML = "cycle random";
-				clearInterval( cycleInt );
-				clearInterval( cycleCounterInt );
 				UI.btns.countdown.innerHTML = "next: 0s";
+				Cycle.pause();
 			} else {
 				Cycle.cycle_favs = true;
 				Cycle.cycle_random = false;
-				this.innerHTML = "&#10003; cycle favs"
+				this.innerHTML = "&#10003; cycle favs";
 				UI.btns.cycleRand.innerHTML = "cycle random";
 				Cycle.reset();
 			}
@@ -163,13 +166,12 @@ var UI = {
 				Cycle.cycle_random = false;
 				this.innerHTML = "cycle random"
 				UI.btns.cycleFavs.innerHTML = "cycle favs";
-				clearInterval( cycleInt );
-				clearInterval( cycleCounterInt );
 				UI.btns.countdown.innerHTML = "next: 0s";
+				Cycle.pause();
 			} else {
 				Cycle.cycle_random = true;
 				Cycle.cycle_favs = false;
-				this.innerHTML = "&#10003; cycle random"
+				this.innerHTML = "&#10003; cycle random";
 				UI.btns.cycleFavs.innerHTML = "cycle favs";
 				Cycle.reset();
 			}
@@ -215,14 +217,14 @@ var UI = {
 	},
 	bind_btn_events: function() {
 		UI.btns.randomize.addEventListener( "click", UI.btn_functions.randomize, false );
-		UI.btns.save.addEventListener( "click", UI.btn_functions.save_fav, false );
-		UI.btns.saveYes.addEventListener( "click", UI.btn_functions.save_fav_yes, false );
-		UI.btns.saveNo.addEventListener( "click", UI.btn_functions.save_fav_no, false );
+		UI.btns.save.addEventListener( "click", UI.btn_functions.save_fav.confirm, false );
+		UI.btns.saveYes.addEventListener( "click", UI.btn_functions.save_fav.yes, false );
+		UI.btns.saveNo.addEventListener( "click", UI.btn_functions.save_fav.no, false );
 		UI.btns.save.innerHTML = "save fav (" + favorites.array.length + ")";
 		UI.btns.next.addEventListener( "click", UI.btn_functions.next_fav, false );
-		UI.btns.delete.addEventListener( "click", UI.btn_functions.del_fav, false );
-		UI.btns.delYes.addEventListener( "click", UI.btn_functions.del_fav_yes, false);
-		UI.btns.delNo.addEventListener( "click", UI.btn_functions.del_fav_no, false);
+		UI.btns.delete.addEventListener( "click", UI.btn_functions.del_fav.confirm, false );
+		UI.btns.delYes.addEventListener( "click", UI.btn_functions.del_fav.yes, false);
+		UI.btns.delNo.addEventListener( "click", UI.btn_functions.del_fav.no, false);
 		UI.btns.cycleFavs.addEventListener( "click", UI.btn_functions.cycle_favs, false );
 		UI.btns.cycleRand.addEventListener( "click", UI.btn_functions.cycle_rand, false );
 		UI.btns.cycleSpeed.addEventListener( "click", UI.btn_functions.cycle_speed, false );
@@ -230,13 +232,13 @@ var UI = {
 	},
 	unbind_btn_events: function() {
 		UI.btns.randomize.removeEventListener( "click", UI.btn_functions.randomize, false );
-		UI.btns.save.removeEventListener( "click", UI.btn_functions.save_fav, false );
-		UI.btns.saveYes.removeEventListener( "click", UI.btn_functions.save_fav_yes, false );
-		UI.btns.saveNo.removeEventListener( "click", UI.btn_functions.save_fav_no, false );
+		UI.btns.save.removeEventListener( "click", UI.btn_functions.save_fav.confirm, false );
+		UI.btns.saveYes.removeEventListener( "click", UI.btn_functions.save_fav.yes, false );
+		UI.btns.saveNo.removeEventListener( "click", UI.btn_functions.save_fav.no, false );
 		UI.btns.next.removeEventListener( "click", UI.btn_functions.next_fav, false );
-		UI.btns.delete.removeEventListener( "click", UI.btn_functions.del_fav, false );
-		UI.btns.delYes.removeEventListener( "click", UI.btn_functions.del_fav_yes, false);
-		UI.btns.delNo.removeEventListener( "click", UI.btn_functions.del_fav_no, false);
+		UI.btns.delete.removeEventListener( "click", UI.btn_functions.del_fav.confirm, false );
+		UI.btns.delYes.removeEventListener( "click", UI.btn_functions.del_fav.yes, false);
+		UI.btns.delNo.removeEventListener( "click", UI.btn_functions.del_fav.no, false);
 		UI.btns.cycleFavs.removeEventListener( "click", UI.btn_functions.cycle_favs, false );
 		UI.btns.cycleRand.removeEventListener( "click", UI.btn_functions.cycle_rand, false );
 		UI.btns.cycleSpeed.removeEventListener( "click", UI.btn_functions.cycle_speed, false );
@@ -283,9 +285,9 @@ var Colors = {
 		Cycle.reset();
 	},
 	set_default: function() {
-		bg = [255, 255, 255]
-		live = [0, 0, 0]
-		dead = [255, 0, 0]
+		bg = [255, 255, 255] // white
+		live = [0, 0, 0] // black
+		dead = [255, 0, 0] // red
 		dead2 = [
 			Math.floor( Number( dead[0] + (bg[0] - dead[0])*(1/3) ) ),
 			Math.floor( Number( dead[1] + (bg[1] - dead[1])*(1/3) ) ),
@@ -352,7 +354,7 @@ var Cycle = {
 var cycleInt = setInterval( Colors.go_next, Cycle.intervals[ Cycle.intIndex ] );
 var cycleCounterInt = setInterval( Cycle.update_counter, 1000 );
 
-// random functions, *literally*
+// random functions, literally
 function shuffle( array ) {
 	var currentIndex = array.length, temporaryValue, randomIndex;
 	// while there remain elements to shuffle...
