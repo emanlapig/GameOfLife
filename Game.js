@@ -102,9 +102,9 @@ var GoL = {
 				}
 				// evaluate dual-state key of this neighbor (0 or 1, no ghosts)
 				if ( j < 4 ) { // already iterated over these
-					var cell = ( keyFrom[ world[look] ] > 3 )? 1 : 0; 
+					var cell = ( keyFrom[ world[look] ] === 4 )? 1 : 0; 
 				} else { // haven't iterated over yet
-					var cell = ( keyTo[ world[look] ] > 3 )? 1 : 0; 
+					var cell = ( keyTo[ world[look] ] === 4 )? 1 : 0; 
 				}
 				// add up neighbors
 				sum += cell;
@@ -223,7 +223,7 @@ function hatch() {
 		for ( var j=0; j<world.length; j++ ) {
 			var row = Math.floor( j/width )
 				, col = Math.floor( j%width );
-			if ( row === hRow  || col === hCol ) { // generate a horizontal and vertical line of live cells
+			if ( row === hRow || col === hCol ) { // generate a horizontal and vertical line of live cells
 				world[j] = 0;
 			}
 		}

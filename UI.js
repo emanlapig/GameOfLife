@@ -39,7 +39,7 @@ function init() {
 	UI.init();
 	// event listeners for options menu toggle
 	canvas.addEventListener( "click", UI.btn_functions.toggle_options, false );
-	UI.btns.options.addEventListener( "click", UI.btn_functions.toggle_options, false );
+	UI.btns.controls.addEventListener( "click", UI.btn_functions.toggle_options, false );
 };
 
 var UI = {
@@ -52,15 +52,15 @@ var UI = {
 				menu.removeAttribute( "class" );
 				var controls = document.getElementById( "controls" );
 				controls.setAttribute( "class", "open" );
-				UI.bind_btn_events();
 				UI.options_open = true;
+				setTimeout( UI.bind_btn_events, 10 );
 			} else {
 				var menu = document.getElementById( "menu" );
 				menu.setAttribute( "class", "hidden" );
 				var controls = document.getElementById( "controls" );
 				controls.removeAttribute( "class" );
-				UI.unbind_btn_events();
 				UI.options_open = false;
+				setTimeout( UI.unbind_btn_events, 10 );;
 			}
 		},
 		randomize: function() {
@@ -202,6 +202,7 @@ var UI = {
 	init: function() {
 		UI.btns.randomize = document.getElementById( "randomize" );
 		UI.btns.options = document.getElementById( "options-btn" );
+		UI.btns.controls = document.getElementById( "controls" );
 		UI.btns.save = document.getElementById( "save-fav" );
 		UI.btns.saveYes = document.getElementById( "color-yes" );
 		UI.btns.saveNo = document.getElementById( "color-no" );
@@ -214,13 +215,14 @@ var UI = {
 		UI.btns.cycleSpeed = document.getElementById( "cycle-speed" );
 		UI.btns.pause = document.getElementById( "pause" );
 		UI.btns.countdown = document.getElementById( "countdown" );
+		UI.btns.save.innerHTML = "save fav (" + favorites.array.length + ")";
 	},
 	bind_btn_events: function() {
+		UI.btns.controls.removeEventListener( "click", UI.btn_functions.toggle_options, false );
 		UI.btns.randomize.addEventListener( "click", UI.btn_functions.randomize, false );
 		UI.btns.save.addEventListener( "click", UI.btn_functions.save_fav.confirm, false );
 		UI.btns.saveYes.addEventListener( "click", UI.btn_functions.save_fav.yes, false );
 		UI.btns.saveNo.addEventListener( "click", UI.btn_functions.save_fav.no, false );
-		UI.btns.save.innerHTML = "save fav (" + favorites.array.length + ")";
 		UI.btns.next.addEventListener( "click", UI.btn_functions.next_fav, false );
 		UI.btns.delete.addEventListener( "click", UI.btn_functions.del_fav.confirm, false );
 		UI.btns.delYes.addEventListener( "click", UI.btn_functions.del_fav.yes, false);
@@ -228,10 +230,12 @@ var UI = {
 		UI.btns.cycleFavs.addEventListener( "click", UI.btn_functions.cycle_favs, false );
 		UI.btns.cycleRand.addEventListener( "click", UI.btn_functions.cycle_rand, false );
 		UI.btns.cycleSpeed.addEventListener( "click", UI.btn_functions.cycle_speed, false );
-		UI.btns.pause.addEventListener( "click", UI.btn_functions.pause, false);
+		UI.btns.pause.addEventListener( "click", UI.btn_functions.pause, false );
+		UI.btns.options.addEventListener( "click", UI.btn_functions.toggle_options, false );
 	},
 	unbind_btn_events: function() {
 		UI.btns.randomize.removeEventListener( "click", UI.btn_functions.randomize, false );
+		UI.btns.options.removeEventListener( "click", UI.btn_functions.toggle_options, false );
 		UI.btns.save.removeEventListener( "click", UI.btn_functions.save_fav.confirm, false );
 		UI.btns.saveYes.removeEventListener( "click", UI.btn_functions.save_fav.yes, false );
 		UI.btns.saveNo.removeEventListener( "click", UI.btn_functions.save_fav.no, false );
@@ -243,6 +247,7 @@ var UI = {
 		UI.btns.cycleRand.removeEventListener( "click", UI.btn_functions.cycle_rand, false );
 		UI.btns.cycleSpeed.removeEventListener( "click", UI.btn_functions.cycle_speed, false );
 		UI.btns.pause.removeEventListener( "click", UI.btn_functions.pause, false);
+		UI.btns.controls.addEventListener( "click", UI.btn_functions.toggle_options, false );
 	}
 };
 
@@ -357,14 +362,14 @@ var cycleCounterInt = setInterval( Cycle.update_counter, 1000 );
 function shuffle( array ) {
 	var currentIndex = array.length, temporaryValue, randomIndex;
 	// while there remain elements to shuffle...
-	while (0 !== currentIndex) {
+	while ( 0 !== currentIndex ) {
 		// pick a remaining element...
-		randomIndex = Math.floor(Math.random() * currentIndex);
+		randomIndex = Math.floor( Math.random() * currentIndex );
 		currentIndex -= 1;
 		// and swap it with the current element
-		temporaryValue = array[currentIndex];
-		array[currentIndex] = array[randomIndex];
-		array[randomIndex] = temporaryValue;
+		temporaryValue = array[ currentIndex ];
+		array[ currentIndex ] = array[ randomIndex ];
+		array[ randomIndex ] = temporaryValue;
 	}
 	return array;
 };
