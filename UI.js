@@ -190,12 +190,12 @@ var UI = {
 				GoL.stop();
 				pause = true;
 				Cycle.pause();
-				this.innerHTML = "play";
+				UI.btns.pause.innerHTML = "play";
 			} else {
 				GoL.start();
 				pause = false;
 				Cycle.reset();
-				this.innerHTML = "pause";
+				UI.btns.pause.innerHTML = "pause";
 			}
 		}
 	},
