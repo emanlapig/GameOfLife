@@ -9,7 +9,7 @@ body {
 	background-color: #000;
 	color: #fff;
 	font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
-	font-size: 12px;
+	font-size: 14px;
 	line-height: 20px;
 	cursor: pointer;
 }
@@ -19,7 +19,7 @@ body {
 	text-align: right;
 }
 .open {
-	width: 90px;
+	width: 120px;
 }
 a.btn:link {
 	text-decoration: none;
