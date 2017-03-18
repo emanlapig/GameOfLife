@@ -317,7 +317,10 @@ var Colors = {
 	save_ls: function() {
 		var favstr = JSON.stringify( favorites );
 		window.localStorage.setItem( "GoL_colors", favstr );
-		UI.btns.save.innerHTML = "save fav (" + favorites.array.length + ")";
+		favorites = JSON.parse( window.localStorage.getItem("GoL_colors") );
+		setTimeout( function() {
+			UI.btns.save.innerHTML = "save fav (" + favorites.array.length + ")";
+		}, 500 );
 	}
 };
 

@@ -1,6 +1,6 @@
 // GAME of LIFE JS
 
-var unit = 8
+var unit = 8;
 
 // cap at 1280 max width or height
 if ( window.innerHeight > 1280 ) {
