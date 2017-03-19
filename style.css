@@ -9,6 +9,10 @@ body {
     src: url(fonts/VarelaRound-Regular.ttf);
 }
 
+canvas {
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
 #controls, .confirm {
 	position: absolute;
 	display: block;
@@ -21,9 +25,13 @@ body {
 	cursor: pointer;
 }
 #controls {
+	display: none;
 	right: 10px;
 	top: 18px;
 	text-align: right;
+}
+#controls.open {
+	display: block;
 }
 .open {
 	width: 120px;

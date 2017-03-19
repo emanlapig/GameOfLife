@@ -3,10 +3,10 @@
 #clock {
 	font-family: 'Varela Round', sans-serif;
 	position: absolute;
-	bottom: 0px;
+	bottom: -20px;
 	right: 10px;
-	font-size: 72px;
-	line-height: 72px;
+	font-size: 96px;
+	line-height: 96px;
 }
 
 #clock #seconds {
@@ -22,8 +22,24 @@
 	content: ":";
 }
 
+#clock #ampm {
+	font-size: 48px;
+    text-transform: uppercase;
+}
+
 #clock #hours,
 #clock #minutes,
 #clock #ampm {
 	display: inline-block;
+}
+
+@media ( min-width: 750px ) and ( orientation: portrait ) {
+	#clock {
+		bottom: -40px;
+		font-size: 180px;
+		line-height: 180px;
+	}
+	#clock #ampm {
+		font-size: 90px;
+	}
 }
