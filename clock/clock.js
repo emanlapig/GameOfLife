@@ -7,8 +7,9 @@ var clock = {
 	minutes: 0,
 	seconds: 0,
 	interval: false,
-	military: true,
+	military: false,
 	show_secs: true,
+	ampm: "am",
 	init: function() {
 		clock.update();
 		clock.interval = setInterval( clock.update, 1000 );
@@ -16,9 +17,10 @@ var clock = {
 	update: function() {
 		var hour_ctnr = document.getElementById( "hours" ),
 			min_ctnr = document.getElementById( "minutes" ),
-			sec_ctnr = document.getElementById( "seconds" );
+			sec_ctnr = document.getElementById( "seconds" ),
+			ampm_ctnr = document.getElementById( "ampm" );
 		time = new Date();
-		clock.hours = ( clock.military )? clock.zero_pad( time.getHours() ) : clock.zero_pad( clock.unmil( time.getHours() ) );
+		clock.hours = ( clock.military )? clock.zero_pad( time.getHours() ) : clock.unmil( time.getHours() );
 		clock.minutes = clock.zero_pad( time.getMinutes() );
 		clock.seconds = clock.zero_pad( time.getSeconds() );
 		hour_ctnr.innerHTML = clock.hours;
@@ -26,9 +28,17 @@ var clock = {
 		if ( clock.show_secs ) {
 			sec_ctnr.innerHTML = clock.seconds;
 		}
+		if ( !clock.military ) {
+			ampm_ctnr.innerHTML = clock.ampm;
+		}
 	},
 	unmil: function( val ) {
-
+		var unmil = val;
+		if ( val > 12 ) {
+			unmil -= 12;
+			clock.ampm = "pm";
+		}
+		return unmil.toString();
 	},
 	zero_pad: function( val ) {
 		var pad = val.toString();
