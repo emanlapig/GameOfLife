@@ -1,0 +1,16 @@
+/* clock css */
+
+#clock {
+	font-family: 'Varela Round', sans-serif;
+	position: absolute;
+	bottom: 0px;
+	right: 0px;
+	font-size: 72px;
+	line-height: 72px;
+}
+
+#clock #hours,
+#clock #minutes,
+#clock #ampm {
+	display: inline-block;
+}

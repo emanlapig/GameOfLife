@@ -1,6 +1,7 @@
 body {
 	margin: 0px;
 	background-color: #000;
+	overflow: hidden;
 }
 #controls, .confirm {
 	position: absolute;
@@ -8,7 +9,7 @@ body {
 	padding: 8px;
 	background-color: #000;
 	color: #fff;
-	font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+	font-family: 'Varela Round', sans-serif;
 	font-size: 14px;
 	line-height: 20px;
 	cursor: pointer;
