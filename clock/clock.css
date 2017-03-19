@@ -4,9 +4,22 @@
 	font-family: 'Varela Round', sans-serif;
 	position: absolute;
 	bottom: 0px;
-	right: 0px;
+	right: 10px;
 	font-size: 72px;
 	line-height: 72px;
+}
+
+#clock #seconds {
+	display: none;
+}
+
+#clock.show-secs #seconds {
+	display: inline-block;
+}
+
+#clock #hours:after,
+#clock.show-secs #minutes:after {
+	content: ":";
 }
 
 #clock #hours,

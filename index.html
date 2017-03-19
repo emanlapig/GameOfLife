@@ -6,8 +6,7 @@
 	<title>Game of Life</title>
 	<script type="text/javascript" src="Game.min.js"></script>
 	<script type="text/javascript" src="UI.min.js"></script>
-	<script type="text/javascript" src="clock/clock.js"></script>
-	<link href="https://fonts.googleapis.com/css?family=Varela+Round" rel="stylesheet">
+	<script type="text/javascript" src="clock/clock.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<link rel="stylesheet" type="text/css" href="clock/clock.css">
 </head>
@@ -45,8 +44,8 @@
 		<a class="btn" id="delete-yes">yes</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn" id="delete-no">no</a>
 	</div>
 
-	<div id="clock">
-		<div id="hours">00</div>:<div id="minutes">00</div><div id="ampm"></div>
+	<div id="clock" class="show-secs">
+		<span id="hours">00</span><span id="minutes">00</span><span id="seconds">00</span><span id="ampm"></span>
 	</div>
 
 	<script type="text/javascript">

@@ -3,6 +3,12 @@ body {
 	background-color: #000;
 	overflow: hidden;
 }
+
+@font-face {
+    font-family: 'Varela Round';
+    src: url(fonts/VarelaRound-Regular.ttf);
+}
+
 #controls, .confirm {
 	position: absolute;
 	display: block;
