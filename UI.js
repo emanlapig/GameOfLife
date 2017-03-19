@@ -31,8 +31,8 @@ function init() {
 		}
 		if ( i === total-1 ) {
 			//console.log("world ready");
-			GoL.render();
-			GoL.start();
+			render();
+			start();
 		}
 	}
 
@@ -187,12 +187,12 @@ var UI = {
 		},
 		pause: function() {
 			if ( !pause ) {
-				GoL.stop();
+				stop();
 				pause = true;
 				Cycle.pause();
 				UI.btns.pause.innerHTML = "play";
 			} else {
-				GoL.start();
+				start();
 				pause = false;
 				Cycle.reset();
 				UI.btns.pause.innerHTML = "pause";

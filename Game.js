@@ -42,150 +42,151 @@ var keyFrom = [ 4, 4, 3, 3, 2, 2, 1, 1, 0, 0 ];
 
 
 // GAME CONTROLLER
-var GoL = {
-	render: function() {
-		ctx.restore(); // reset the canvas each frame
-		ctx.clearRect( 0, 0, width * unit, height * unit );
-		for ( var i=0; i<world.length; i++ ) {
-			var col = Math.floor( i/width ) * unit;
-			var row = Math.floor( i%width ) * unit;
-			var to = keyTo[ world[i] ];
-			switch ( to ) {
-				case 0:
-					ctx.fillStyle = "rgb("+bg[0]+","+bg[1]+","+bg[2]+")";
-					break;
-				case 1:
-					ctx.fillStyle = "rgb("+dead3[0]+","+dead3[1]+","+dead3[2]+")";
-					break;
-				case 2:
-					ctx.fillStyle = "rgb("+dead2[0]+","+dead2[1]+","+dead2[2]+")";
-					break;
-				case 3:
-					ctx.fillStyle = "rgb("+dead[0]+","+dead[1]+","+dead[2]+")";
-					break;
-				case 4:
-					ctx.fillStyle = "rgb("+live[0]+","+live[1]+","+live[2]+")";
-					break;
-			}
-			ctx.fillRect( row, col, unit, unit );
+function render() {
+	ctx.restore(); // reset the canvas each frame
+	ctx.clearRect( 0, 0, width * unit, height * unit );
+	for ( var i=0; i<world.length; i++ ) {
+		var col = Math.floor( i/width ) * unit;
+		var row = Math.floor( i%width ) * unit;
+		var to = keyTo[ world[i] ];
+		switch ( to ) {
+			case 0:
+				ctx.fillStyle = "rgb("+bg[0]+","+bg[1]+","+bg[2]+")";
+				break;
+			case 1:
+				ctx.fillStyle = "rgb("+dead3[0]+","+dead3[1]+","+dead3[2]+")";
+				break;
+			case 2:
+				ctx.fillStyle = "rgb("+dead2[0]+","+dead2[1]+","+dead2[2]+")";
+				break;
+			case 3:
+				ctx.fillStyle = "rgb("+dead[0]+","+dead[1]+","+dead[2]+")";
+				break;
+			case 4:
+				ctx.fillStyle = "rgb("+live[0]+","+live[1]+","+live[2]+")";
+				break;
 		}
-		if ( !fps ) {
-			window.requestAnimationFrame( GoL.parse_world );
-		}
-	},
-	parse_world: function() {
-		for ( var i=0; i<world.length; i++ ) {
-			// find this cell's neighbors
-			// 1 2 3
-			// 4 i 5
-			// 6 7 8
-			var i1 = i-width-1
-				, i2 = i-width
-				, i3 = i-width+1
-				, i4 = i-1
-				, i5 = i+1
-				, i6 = i+width-1
-				, i7 = i+width
-				, i8 = i+width+1;
-
-			var neighbors = [ i1, i2, i3, i4, i5, i6, i7, i8 ]
-				, sum = 0; // total # of neighbors
-
-			for ( var j=0; j<neighbors.length; j++ ) {
-				// world vertical wrap
-				if ( neighbors[j] >= 0 && neighbors[j] <= world.length ) {
-					var look = neighbors[j];
-				} else if ( neighbors[j] < 0 ) {
-					var look = neighbors[j] + world.length;
-				} else if ( neighbors[j] > world.length ) {
-					var look = neighbors[j] - world.length;
-				}
-				// evaluate dual-state key of this neighbor (0 or 1, no ghosts)
-				if ( j < 4 ) { // already iterated over these
-					var cell = ( keyFrom[ world[look] ] === 4 )? 1 : 0; 
-				} else { // haven't iterated over yet
-					var cell = ( keyTo[ world[look] ] === 4 )? 1 : 0; 
-				}
-				// add up neighbors
-				sum += cell;
-			}
-
-			var to = keyTo[ world[i] ];
-			var from = keyTo[ world[i] ];
-
-			// CONWAY'S RULES
-			if ( from < 4 ) { // DEAD
-				if ( sum === 3 ) { // tri-sexual reproduction
-					to = 4; // spawn new
-				} else {
-					if ( world[i] !== 0 ) { // ghost
-						to -= 1; // more dead
-					}
-				}
-			} else { // ALIVE
-				if ( sum < 2 || sum > 3 ) { // too many or too few neighbors
-					to = 3; // die
-				}
-			}
-
-			// convert to dual-state key
-			switch ( from ) {
-				case 4:
-					if ( to === 4 ) {
-						world[i] = 0;
-					} else if ( to === 3 ) {
-						world[i] = 1;
-					}
-					break;
-				case 3:
-					if ( to === 4 ) {
-						world[i] = 2;
-					} else if ( to === 2 ) {
-						world[i] = 3;
-					}
-					break;
-				case 2:
-					if ( to === 4 ) {
-						world[i] = 4;
-					} else if ( to === 1 ) {
-						world[i] = 5;
-					}
-					break;
-				case 1:
-					if ( to === 4 ) {
-						world[i] = 6;
-					} else if ( to === 0 ) {
-						world[i] = 7;
-					}
-					break;
-				case 0:
-					if ( to === 4 ) {
-						world[i] = 8;
-					} else if ( to === 0 ) {
-						world[i] = 9;
-					}
-					break;
-			}
-		}
-		// check for eggs once every 100 frames
-		if ( counter < 100 ) {
-			counter += 1;
-		} else {
-			hatch();
-			counter = 0;
-		}
-		GoL.render();
-	},
-	start: function() {
-		if ( !fps ) {
-			window.requestAnimationFrame( GoL.parse_world );
-		} else {
-			playing = setInterval( GoL.parse_world, (1000/fps) );
-		}
-	},
-	stop: function() {
-		clearInterval( playing );
+		ctx.fillRect( row, col, unit, unit );
 	}
+	if ( !fps ) {
+		window.requestAnimationFrame( parse_world );
+	}
+};
+
+function parse_world() {
+	for ( var i=0; i<world.length; i++ ) {
+		// find this cell's neighbors
+		// 1 2 3
+		// 4 i 5
+		// 6 7 8
+		var i1 = i-width-1
+			, i2 = i-width
+			, i3 = i-width+1
+			, i4 = i-1
+			, i5 = i+1
+			, i6 = i+width-1
+			, i7 = i+width
+			, i8 = i+width+1;
+
+		var neighbors = [ i1, i2, i3, i4, i5, i6, i7, i8 ]
+			, sum = 0; // total # of neighbors
+
+		for ( var j=0; j<neighbors.length; j++ ) {
+			// world vertical wrap
+			if ( neighbors[j] >= 0 && neighbors[j] <= world.length ) {
+				var look = neighbors[j];
+			} else if ( neighbors[j] < 0 ) {
+				var look = neighbors[j] + world.length;
+			} else if ( neighbors[j] > world.length ) {
+				var look = neighbors[j] - world.length;
+			}
+			// evaluate dual-state key of this neighbor (0 or 1, no ghosts)
+			if ( j < 4 ) { // already iterated over these
+				var cell = ( keyFrom[ world[look] ] === 4 )? 1 : 0; 
+			} else { // haven't iterated over yet
+				var cell = ( keyTo[ world[look] ] === 4 )? 1 : 0; 
+			}
+			// add up neighbors
+			sum += cell;
+		}
+
+		var to = keyTo[ world[i] ];
+		var from = keyTo[ world[i] ];
+
+		// CONWAY'S RULES
+		if ( from < 4 ) { // DEAD
+			if ( sum === 3 ) { // tri-sexual reproduction
+				to = 4; // spawn new
+			} else {
+				if ( world[i] !== 0 ) { // ghost
+					to -= 1; // more dead
+				}
+			}
+		} else { // ALIVE
+			if ( sum < 2 || sum > 3 ) { // too many or too few neighbors
+				to = 3; // die
+			}
+		}
+
+		// convert to dual-state key
+		switch ( from ) {
+			case 4:
+				if ( to === 4 ) {
+					world[i] = 0;
+				} else if ( to === 3 ) {
+					world[i] = 1;
+				}
+				break;
+			case 3:
+				if ( to === 4 ) {
+					world[i] = 2;
+				} else if ( to === 2 ) {
+					world[i] = 3;
+				}
+				break;
+			case 2:
+				if ( to === 4 ) {
+					world[i] = 4;
+				} else if ( to === 1 ) {
+					world[i] = 5;
+				}
+				break;
+			case 1:
+				if ( to === 4 ) {
+					world[i] = 6;
+				} else if ( to === 0 ) {
+					world[i] = 7;
+				}
+				break;
+			case 0:
+				if ( to === 4 ) {
+					world[i] = 8;
+				} else if ( to === 0 ) {
+					world[i] = 9;
+				}
+				break;
+		}
+	}
+	// check for eggs once every 100 frames
+	if ( counter < 100 ) {
+		counter += 1;
+	} else {
+		hatch();
+		counter = 0;
+	}
+	render();
+};
+
+function start() {
+	if ( !fps ) {
+		window.requestAnimationFrame( parse_world );
+	} else {
+		playing = setInterval( parse_world, (1000/fps) );
+	}
+};
+
+function stop() {
+	clearInterval( playing );
 };
 
 function hatch() {
