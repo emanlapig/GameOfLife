@@ -38,6 +38,9 @@ var clock = {
 			unmil -= 12;
 			clock.ampm = "pm";
 		} else {
+			if ( val < 1 ) {
+				unmil = 12;
+			}
 			clock.ampm = "am";
 		}
 		return unmil.toString();
