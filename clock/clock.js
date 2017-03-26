@@ -12,7 +12,7 @@ var clock = {
 	interval: false,
 	military: false,
 	show_secs: true,
-	ctnr: "#clock",
+	ctnr: "clock",
 	days_arr: [
 		"Sunday",
 		"Monday",
@@ -92,10 +92,10 @@ var clock = {
 
 var weather = {
 	interval: false,
-	ctnr: "#weather",
+	ctnr: "weather",
 	init: function() {
 		weather.update();
-		weather.interval = setInterval( weather.update, 60000 );
+		weather.interval = setInterval( weather.update, 300000 );
 	},
 	update: function() {
 		$.simpleWeather({

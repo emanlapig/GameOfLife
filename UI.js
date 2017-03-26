@@ -296,17 +296,17 @@ var Colors = {
 		var darkness = bg[0] + bg[1] + bg[2];
 		if ( darkness < 382 ) {
 			if ( clock.ctnr ) {
-				$( clock.ctnr ).addClass( "dark" );
+				addClass( clock.ctnr, "dark" );
 			}
 			if ( weather.ctnr ) {
-				$( weather.ctnr ).addClass( "dark" );
+				addClass( weather.ctnr, "dark" );
 			}
 		} else {
 			if ( clock.ctnr ) {
-				 $( clock.ctnr ).removeClass( "dark" );
+				removeClass( clock.ctnr, "dark" );
 			}
 			if ( weather.ctnr ) {
-				$( weather.ctnr ).removeClass( "dark" );
+				removeClass( weather.ctnr, "dark" );
 			}
 		}
 	},
@@ -402,3 +402,31 @@ function random( a, b ) {
 	var c = b - a;
 	return Math.floor( Math.random()*c+a );
 };
+
+function addClass( id, add ) {
+	var el = document.getElementById( id );
+	var classes = el.getAttribute( "class" );
+	if ( classes ) {
+		var arr = classes.split( " " );
+		if ( arr.indexOf( add ) === -1 ) {
+			arr.push( add );
+		}
+		el.setAttribute( "class", arr.join( " " ) );
+	} else {
+		el.setAttribute( "class", add );
+	}
+}
+
+function removeClass( id, remove ) {
+	var el = document.getElementById( id );
+	var classes = el.getAttribute( "class" );
+	if ( classes ) {
+		var arr = classes.split( " " );
+		if ( arr.indexOf( remove ) !== -1 ) {
+			arr.splice( arr.indexOf( remove ), 1 );
+		}
+		el.setAttribute( "class", arr.join( " " ) );
+	} else {
+		el.setAttribute( "class", "" );
+	}
+}
