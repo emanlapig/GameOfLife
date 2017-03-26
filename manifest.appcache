@@ -7,9 +7,9 @@ style.css
 clock/clock.min.js
 clock/clock.css
 fonts/VarelaRound-Regular.ttf
-lib/jquery-3.2.0.min
-lib/jquery.simpleWeather.min
+fonts/artill_clean_icons.otf
+lib/jquery-3.2.0.min.js
+lib/jquery.simpleWeather.min.js
 
 NETWORK:
-https://query.yahooapis.com
-#updated 03-25-2017 @ 9:09pm
+#updated 03-25-2017 @ 9:57pm

@@ -95,7 +95,7 @@ var weather = {
 	ctnr: "#weather",
 	init: function() {
 		weather.update();
-		weather.interval = setInterval( weather.update, 20000 );
+		weather.interval = setInterval( weather.update, 60000 );
 	},
 	update: function() {
 		$.simpleWeather({
@@ -115,7 +115,8 @@ var weather = {
 				$h2.html( weather.temp + '&deg;' + weather.units.temp );
 			},
 			error: function( error ) {
-				//$( "#weather" ).addClass( "hidden" );
+				$( "#weather" ).addClass( "hidden" );
+				console.log( error );
 			}
 		});
 	}
