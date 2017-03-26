@@ -11,7 +11,7 @@ var clock = {
 	date: 1,
 	interval: false,
 	military: false,
-	show_secs: true,
+	show_secs: false,
 	ctnr: "clock",
 	days_arr: [
 		"Sunday",
@@ -95,7 +95,7 @@ var weather = {
 	ctnr: "weather",
 	init: function() {
 		weather.update();
-		weather.interval = setInterval( weather.update, 300000 );
+		weather.interval = setInterval( weather.update, 600000 );
 	},
 	update: function() {
 		$.simpleWeather({
@@ -103,19 +103,18 @@ var weather = {
 			woeid: '',
 			unit: 'f',
 			success: function( weather ) {
-				$( "#weather" ).removeClass( "hidden" );
-				var $icon_ctnr = $( "#weather #icon" ),
-					$hi_ctnr = $( "#weather #hilo #hi" ),
-					$lo_ctnr = $( "#weather #hilo #lo" ),
-					$h2 = $( "#weather h2" );
-
-				$icon_ctnr.html( '<i class="icon-' + weather.code + '"></i>' );
-				$hi_ctnr.html( 'Hi ' + weather.high + '&deg;' );
-				$lo_ctnr.html( 'Lo ' + weather.low + '&deg;' );
-				$h2.html( weather.temp + '&deg;' + weather.units.temp );
+				removeClass( "weather", "hidden" );
+				var icon_ctnr = document.getElementById( "icon" ),
+					hi_ctnr = document.getElementById( "hi" ),
+					lo_ctnr = document.getElementById( "lo" ),
+					temp_ctnr = document.getElementById( "temp" );
+				icon_ctnr.innerHTML = '<i class="icon-' + weather.code + '"></i>';
+				hi_ctnr.innerHTML = 'Hi ' + weather.high + '&deg;';
+				lo_ctnr.innerHTML = 'Lo ' + weather.low + '&deg;';
+				temp_ctnr.innerHTML = weather.temp + '&deg;' + weather.units.temp;
 			},
 			error: function( error ) {
-				$( "#weather" ).addClass( "hidden" );
+				addClass( "weather", "hidden" );
 				console.log( error );
 			}
 		});
