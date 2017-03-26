@@ -259,6 +259,7 @@ var Colors = {
 		} else if ( Cycle.cycle_random ) {
 			Colors.random_color();
 		}
+		Colors.dark();
 	},
 	next_fav: function() {
 		if ( Colors.favIndex < favorites.array.length-1 ) {
@@ -272,6 +273,7 @@ var Colors = {
 		dead2 = favorites.array[ Colors.favIndex ].d2;
 		dead3 = favorites.array[ Colors.favIndex ].d3;
 		Cycle.reset();
+		Colors.dark();
 	},
 	random_color: function() {
 		bg = [ Math.floor( random(0,255) ), Math.floor( random(0,255) ), Math.floor( random(0,255) ) ];
@@ -288,6 +290,25 @@ var Colors = {
 			Math.floor( Number( dead[2] + (bg[2] - dead[2])*(2/3) ) ),
 		];
 		Cycle.reset();
+		Colors.dark();
+	},
+	dark: function() {
+		var darkness = bg[0] + bg[1] + bg[2];
+		if ( darkness < 382 ) {
+			if ( clock.ctnr ) {
+				$( clock.ctnr ).addClass( "dark" );
+			}
+			if ( weather.ctnr ) {
+				$( weather.ctnr ).addClass( "dark" );
+			}
+		} else {
+			if ( clock.ctnr ) {
+				 $( clock.ctnr ).removeClass( "dark" );
+			}
+			if ( weather.ctnr ) {
+				$( weather.ctnr ).removeClass( "dark" );
+			}
+		}
 	},
 	set_default: function() {
 		bg = [255, 255, 255] // white

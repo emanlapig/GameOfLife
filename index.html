@@ -7,6 +7,8 @@
 	<script type="text/javascript" src="Game.min.js"></script>
 	<script type="text/javascript" src="UI.min.js"></script>
 	<script type="text/javascript" src="clock/clock.min.js"></script>
+	<script type="text/javascript" src="lib/jquery-3.2.0.min.js"></script>
+	<script type="text/javascript" src="lib/jquery.simpleWeather.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<link rel="stylesheet" type="text/css" href="clock/clock.css">
 </head>
@@ -29,7 +31,7 @@
 			<br><br>
 			<span class="small">
 				updated<br>
-				3/23 @ 12:11am
+				3/25 @ 8:54pm
 			</span>
 		</span>
 	</div>
@@ -45,15 +47,23 @@
 	</div>
 
 	<div id="clock">
-		<span id="hours">00</span><span id="minutes">00</span><span id="seconds">00</span><span id="ampm"></span>
+		<span id="today"><span id="day"></span>, <span id="month"></span> <span id="date"></span></span><br>
+		<span id="hours"></span><span id="minutes"></span><span id="seconds"></span><span id="ampm"></span>
 	</div>
 
-	<div id="weather">
-
+	<div id="weather" class="hidden">
+		<div id="icon"></div>
+		<div id="hilo">
+			<span id="hi">Hi 32&deg;</span><br>
+			<span id="lo">lo 32&deg;</span>
+		</div>
+		<h2>32&deg;F</h2>
 	</div>
 
 	<script type="text/javascript">
-		init(); clock.init();
+		init();
+		clock.init();
+		weather.init();
 		document.addEventListener( "touchstart", function(){}, true );
 	</script>
 </body>
